@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario WM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div>
+                <p class="eyebrow">Sistema de inventario</p>
+                <h1>Inventario WM</h1>
+            </div>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alerts">
+                    {% for message in messages %}
+                        <div class="alert">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <section class="stats">
+            <div class="card">
+                <span>Total de productos</span>
+                <strong>{{ total_products }}</strong>
+            </div>
+            <div class="card">
+                <span>Unidades en stock</span>
+                <strong>{{ total_stock }}</strong>
+            </div>
+            <div class="card warning">
+                <span>Productos bajos</span>
+                <strong>{{ low_stock | length }}</strong>
+            </div>
+            <div class="card success">
+                <span>Valor en inventario</span>
+                <strong>${{ '%.2f' | format(total_value) }}</strong>
+            </div>
+        </section>
+
+        <main class="grid">
+            <section class="panel">
+                <h2>Registrar nuevo producto</h2>
+                <form action="{{ url_for('add_product') }}" method="post" class="form-grid">
+                    <label>
+                        Nombre
+                        <input type="text" name="name" required>
+                    </label>
+                    <label>
+                        Categoría
+                        <input type="text" name="category" placeholder="General">
+                    </label>
+                    <label>
+                        Stock inicial
+                        <input type="number" name="stock" min="0" value="0">
+                    </label>
+                    <label>
+                        Stock mínimo
+                        <input type="number" name="minimum_stock" min="0" value="5">
+                    </label>
+                    <label>
+                        Precio compra
+                        <input type="number" step="0.01" min="0" name="buy_price" value="0">
+                    </label>
+                    <label>
+                        Precio venta
+                        <input type="number" step="0.01" min="0" name="sale_price" value="0">
+                    </label>
+                    <button type="submit">Guardar producto</button>
+                </form>
+            </section>
+
+            <section class="panel">
+                <h2>Registrar movimiento</h2>
+                <form action="{{ url_for('register_movement') }}" method="post" class="form-grid">
+                    <label>
+                        Producto
+                        <select name="product_id" required>
+                            <option value="">Selecciona un producto</option>
+                            {% for product in products %}
+                                <option value="{{ product['id'] }}">{{ product['name'] }} (Stock: {{ product['stock'] }})</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label>
+                        Tipo
+                        <select name="type" required>
+                            <option value="entry">Entrada</option>
+                            <option value="exit">Salida</option>
+                        </select>
+                    </label>
+                    <label>
+                        Cantidad
+                        <input type="number" name="quantity" min="1" required value="1">
+                    </label>
+                    <label>
+                        Observación
+                        <input type="text" name="notes" placeholder="Proveedor, venta, ajuste...">
+                    </label>
+                    <button type="submit">Guardar movimiento</button>
+                </form>
+            </section>
+        </main>
+
+        <section class="panel">
+            <h2>Alertas de stock</h2>
+            {% if low_stock %}
+                <ul class="alert-list">
+                    {% for product in low_stock %}
+                        <li>
+                            <strong>{{ product['name'] }}</strong>
+                            <span>Stock actual: {{ product['stock'] }}</span>
+                            <span>Stock mínimo: {{ product['minimum_stock'] }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No hay productos con stock bajo.</p>
+            {% endif %}
+        </section>
+
+        <section class="panel">
+            <h2>Productos</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Stock</th>
+                            <th>Mínimo</th>
+                            <th>Compra</th>
+                            <th>Venta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                            <tr>
+                                <td>{{ product['name'] }}</td>
+                                <td>{{ product['category'] }}</td>
+                                <td>{{ product['stock'] }}</td>
+                                <td>{{ product['minimum_stock'] }}</td>
+                                <td>${{ '%.2f' | format(product['buy_price']) }}</td>
+                                <td>${{ '%.2f' | format(product['sale_price']) }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Movimientos recientes</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Tipo</th>
+                            <th>Cantidad</th>
+                            <th>Nota</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for movement in movements %}
+                            <tr>
+                                <td>{{ movement['product_name'] }}</td>
+                                <td>{{ 'Entrada' if movement['type'] == 'entry' else 'Salida' }}</td>
+                                <td>{{ movement['quantity'] }}</td>
+                                <td>{{ movement['notes'] or '-' }}</td>
+                                <td>{{ movement['created_at'] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
