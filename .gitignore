@@ -1,6 +1,6 @@
 # Inventario WM
 
-Sistema de inventario para una tienda pequeña. El proyecto permite registrar productos, registrar entradas y salidas de stock, revisar productos con bajo inventario y consultar un resumen general del inventario.
+Sistema de inventario para una tienda pequeña. Permite registrar productos, controlar entradas y salidas de stock, detectar productos bajos y visualizar reportes generales del negocio.
 
 ## Tecnologías
 
@@ -13,6 +13,13 @@ Sistema de inventario para una tienda pequeña. El proyecto permite registrar pr
 - Python 3.10 o superior
 - pip
 
+## Credenciales de acceso
+
+La aplicación incluye una sesión de administrador para uso inicial:
+
+- Usuario: `admin`
+- Contraseña: `admin123`
+
 ## Instalación
 
 1. Clona el repositorio.
@@ -24,7 +31,7 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-4. Instala las dependencias:
+4. Instala la dependencia:
 
 ```bash
 pip install flask
@@ -36,7 +43,7 @@ pip install flask
 python app.py
 ```
 
-Luego abre tu navegador en:
+Abre tu navegador en:
 
 ```text
 http://127.0.0.1:5000/
@@ -44,32 +51,34 @@ http://127.0.0.1:5000/
 
 ## Funcionalidades
 
-- Registrar productos
-- Agregar stock por entrada
-- Registrar salidas de inventario
-- Ver productos con bajo stock
-- Revisar movimientos recientes
-- Ver resumen del inventario
+- Registro de productos
+- Control de entradas y salidas de inventario
+- Alertas de stock bajo
+- Registro de ventas y movimientos del negocio
+- Reportes por categoría y producto
+- Inicio de sesión para administrador
 
 ## Estructura del proyecto
 
-- `app.py`: configuración de Flask y lógica del sistema.
-- `templates/index.html`: interfaz principal.
-- `static/style.css`: estilos del sistema.
-- `inventario.db`: base de datos SQLite creada automáticamente.
+- `app.py`: lógica principal del sistema
+- `templates/index.html`: página principal del inventario
+- `templates/login.html`: acceso al sistema
+- `templates/report.html`: reportes y resumen
+- `static/style.css`: estilos visuales
+- `inventario.db`: base de datos SQLite creada automáticamente
 
-## Sugerencia de mejora
+## Recomendación para entrega
 
-Este MVP sirve como base. En una segunda etapa puedes agregar:
+Esta versión puede servir como proyecto funcional para presentar. En una etapa siguiente puedes agregar:
 
-- login para usuario administrador
-- ventas con historial
-- búsqueda de productos
-- exportación a PDF o Excel
-- generación de reportes por fechas
-- panel para dueño con información simple
+- Login con usuarios reales
+- Exportación a PDF o Excel
+- Búsqueda avanzada de productos
+- Sistema de proveedores
+- Historial de ventas por fecha
+- Dashboard visual más moderno
 
 ## Autor
 
-Proyecto creado para apoyar la administración del inventario de una tienda pequeña.
+Proyecto destinado a apoyar la gestión de inventario de una pequeña tienda.
 
