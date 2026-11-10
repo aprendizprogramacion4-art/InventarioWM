@@ -1,0 +1,75 @@
+# Inventario WM
+
+Sistema de inventario para una tienda pequeña. El proyecto permite registrar productos, registrar entradas y salidas de stock, revisar productos con bajo inventario y consultar un resumen general del inventario.
+
+## Tecnologías
+
+- Python 3
+- Flask
+- SQLite
+
+## Requisitos
+
+- Python 3.10 o superior
+- pip
+
+## Instalación
+
+1. Clona el repositorio.
+2. Entra a la carpeta del proyecto.
+3. Crea un entorno virtual:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+4. Instala las dependencias:
+
+```bash
+pip install flask
+```
+
+## Ejecutar la aplicación
+
+```bash
+python app.py
+```
+
+Luego abre tu navegador en:
+
+```text
+http://127.0.0.1:5000/
+```
+
+## Funcionalidades
+
+- Registrar productos
+- Agregar stock por entrada
+- Registrar salidas de inventario
+- Ver productos con bajo stock
+- Revisar movimientos recientes
+- Ver resumen del inventario
+
+## Estructura del proyecto
+
+- `app.py`: configuración de Flask y lógica del sistema.
+- `templates/index.html`: interfaz principal.
+- `static/style.css`: estilos del sistema.
+- `inventario.db`: base de datos SQLite creada automáticamente.
+
+## Sugerencia de mejora
+
+Este MVP sirve como base. En una segunda etapa puedes agregar:
+
+- login para usuario administrador
+- ventas con historial
+- búsqueda de productos
+- exportación a PDF o Excel
+- generación de reportes por fechas
+- panel para dueño con información simple
+
+## Autor
+
+Proyecto creado para apoyar la administración del inventario de una tienda pequeña.
+
