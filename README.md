@@ -1,184 +1,80 @@
-body {
-    margin: 0;
-    background: #f3f7fb;
-    font-family: Arial, sans-serif;
-    color: #1f2937;
-}
+# Inventario WM (Laravel)
 
-* {
-    box-sizing: border-box;
-}
+Sistema web para organizar una tienda pequeña. Está construido con **Laravel 12, PHP 8.2+ y SQLite**. El administrador registra productos y entregas, controla entradas y salidas, revisa alertas de stock y descarga reportes CSV.
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 32px 18px 48px;
-}
+## Requisitos
 
-.header {
-    margin-bottom: 24px;
-}
+- PHP 8.2 o superior con las extensiones habituales de Laravel (PDO SQLite, OpenSSL, Mbstring, Tokenizer, XML, Ctype, JSON y Fileinfo).
+- Composer 2.
 
-.eyebrow {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: #4f46e5;
-    margin-bottom: 8px;
-}
+## Instalación local
 
-h1 {
-    margin: 0;
-    font-size: 2.5rem;
-}
+1. Clona el repositorio y entra a su carpeta.
+2. Instala Laravel y sus dependencias:
 
-h2 {
-    margin-top: 0;
-    margin-bottom: 18px;
-}
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-.stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 18px;
-    margin-bottom: 28px;
-}
+En Windows PowerShell, usa `Copy-Item .env.example .env` en lugar de `cp`.
 
-.card {
-    background: #fff;
-    padding: 20px;
-    border-radius: 14px;
-    box-shadow: 0 10px 25px rgba(31, 41, 55, 0.06);
-    border-left: 6px solid #2563eb;
-}
+3. Crea el archivo de la base de datos SQLite:
 
-.card.warning {
-    border-left-color: #f59e0b;
-}
+```bash
+# Linux/macOS
+ touch database/database.sqlite
+# Windows PowerShell
+ New-Item database/database.sqlite -ItemType File
+```
 
-.card.success {
-    border-left-color: #10b981;
-}
+4. Ejecuta las migraciones:
 
-.card span {
-    display: block;
-    font-size: 0.8rem;
-    color: #6b7280;
-    margin-bottom: 10px;
-}
+```bash
+php artisan migrate
+```
 
-.card strong {
-    font-size: 1.8rem;
-}
+5. Configura una contraseña de administrador. Genera un hash y cópialo en `INVENTORY_ADMIN_PASSWORD_HASH` en `.env`:
 
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 20px;
-    margin-bottom: 24px;
-}
+```bash
+php artisan inventory:password "cambia-esta-clave"
+```
 
-.panel {
-    background: #fff;
-    border-radius: 14px;
-    padding: 22px;
-    box-shadow: 0 10px 25px rgba(31, 41, 55, 0.06);
-    margin-bottom: 24px;
-}
+Configura también `INVENTORY_ADMIN_USERNAME=admin` (o el usuario que prefieras), guarda `.env` y limpia la configuración cacheada si la habías generado:
 
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
-}
+```bash
+php artisan config:clear
+```
 
-label {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    font-weight: 600;
-    color: #374151;
-}
+6. Arranca la aplicación:
 
-input, select, button {
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid #d1d5db;
-    font-size: 1rem;
-}
+```bash
+php artisan serve
+```
 
-input:focus, select:focus {
-    outline: 2px solid rgba(37, 99, 235, 0.2);
-    border-color: #2563eb;
-}
+Abre http://127.0.0.1:8000 e inicia sesión con los valores configurados en `.env`.
 
-button {
-    align-self: end;
-    background: #2563eb;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-weight: 700;
-}
+## Funcionalidades
 
-button:hover {
-    background: #1d4ed8;
-}
+- Acceso de administrador con sesión y contraseña guardada como hash.
+- Alta, edición y eliminación protegida de productos.
+- Búsqueda por nombre o categoría y paginación.
+- Registro transaccional de entradas y salidas; impide salidas mayores que el stock disponible.
+- Alertas y métricas de existencias bajas.
+- Historial de movimientos.
+- Reporte por categoría y exportación del inventario a CSV.
 
-.alerts {
-    margin-bottom: 22px;
-}
+## Estructura principal
 
-.alert {
-    background: #ecfdf5;
-    border: 1px solid #a7f3d0;
-    color: #065f46;
-    padding: 12px 14px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
+- `app/Http/Controllers`: controladores web y validaciones.
+- `app/Http/Middleware`: protección de rutas del administrador.
+- `app/Models`: modelos Eloquent.
+- `database/migrations`: esquema SQLite.
+- `resources/views`: páginas Blade.
+- `routes/web.php`: rutas web.
+- `public/css/app.css`: estilos.
 
-.alert-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    gap: 10px;
-}
+## Nota sobre archivos anteriores
 
-.alert-list li {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    background: #fff7ed;
-    border: 1px solid #fed7aa;
-    border-radius: 10px;
-    padding: 12px 14px;
-    color: #9a4d00;
-    flex-wrap: wrap;
-}
-
-.table-wrap {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 12px 10px;
-    text-align: left;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-th {
-    background: #f9fafb;
-}
-
-@media (max-width: 700px) {
-    h1 {
-        font-size: 2rem;
-    }
-}
+La rama de trabajo recibió una primera prueba en Flask antes de cambiar el enfoque. Los archivos antiguos `app.py`, `templates/` y `static/` se conservan en el historial/directorio por ahora, pero **no son utilizados por esta aplicación Laravel**. El punto de entrada actual es `public/index.php` y el comando es `php artisan serve`.

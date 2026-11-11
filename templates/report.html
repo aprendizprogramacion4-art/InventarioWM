@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Inventario WM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-body">
+    <div class="auth-card">
+        <h1>Inventario WM</h1>
+        <p class="auth-subtitle">Inicia sesión para administrar la tienda</p>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alerts">
+                    {% for message in messages %}
+                        <div class="alert">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="post" class="auth-form">
+            <label>
+                Usuario
+                <input type="text" name="username" placeholder="admin" required>
+            </label>
+            <label>
+                Contraseña
+                <input type="password" name="password" placeholder="********" required>
+            </label>
+            <button type="submit">Ingresar</button>
+        </form>
+
+        <p class="auth-footnote">Usuario de prueba: admin / admin123</p>
+    </div>
+</body>
+</html>
+

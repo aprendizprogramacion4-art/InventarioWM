@@ -1,0 +1,8 @@
+@extends('layouts.app')
+@section('title', 'Reportes | Inventario WM')
+@section('content')
+<section class="page-heading"><div><p class="eyebrow">Resumen del negocio</p><h1>Reportes</h1><p class="muted">Consulta las existencias y descarga el inventario en CSV.</p></div><a class="button" href="{{ route('reports.csv') }}">Descargar CSV</a></section>
+<section class="stats"><article class="stat"><span>Unidades recibidas</span><strong>{{ $totalEntries }}</strong></article><article class="stat"><span>Unidades de salida</span><strong>{{ $totalExits }}</strong></article><article class="stat"><span>Categorías</span><strong>{{ $categories->count() }}</strong></article></section>
+<section class="panel"><h2>Inventario por categoría</h2><div class="table-scroll"><table><thead><tr><th>Categoría</th><th>Productos</th><th>Unidades disponibles</th><th>Precio venta promedio</th></tr></thead><tbody>@forelse ($categories as $category)<tr><td>{{ $category->category }}</td><td>{{ $category->product_count }}</td><td>{{ $category->units }}</td><td>${{ number_format((float) $category->average_price, 2) }}</td></tr>@empty<tr><td colspan="4" class="empty">Aún no existen productos.</td></tr>@endforelse</tbody></table></div></section>
+<section class="panel"><h2>Entradas y salidas por producto</h2><div class="table-scroll"><table><thead><tr><th>Producto</th><th>Entradas</th><th>Salidas</th></tr></thead><tbody>@forelse ($movements as $movement)<tr><td>{{ $movement->product?->name ?? 'Producto eliminado' }}</td><td>{{ $movement->entries }}</td><td>{{ $movement->exits }}</td></tr>@empty<tr><td colspan="3" class="empty">Aún no hay movimientos registrados.</td></tr>@endforelse</tbody></table></div></section>
+@endsection
