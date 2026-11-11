@@ -1,84 +1,30 @@
-# Inventario WM
+# Laravel
+/vendor
+/node_modules
+/public/build
+/public/hot
+/public/storage
 
-Sistema de inventario para una tienda pequeña. Permite registrar productos, controlar entradas y salidas de stock, detectar productos bajos y visualizar reportes generales del negocio.
+# Environment
+.env
+.env.*
+!.env.example
 
-## Tecnologías
+# Laravel runtime
+/storage/*.key
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+/bootstrap/cache/*.php
 
-- Python 3
-- Flask
-- SQLite
+# Database local
+/database/*.sqlite
+/database/*.sqlite-journal
 
-## Requisitos
-
-- Python 3.10 o superior
-- pip
-
-## Credenciales de acceso
-
-La aplicación incluye una sesión de administrador para uso inicial:
-
-- Usuario: `admin`
-- Contraseña: `admin123`
-
-## Instalación
-
-1. Clona el repositorio.
-2. Entra a la carpeta del proyecto.
-3. Crea un entorno virtual:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-```
-
-4. Instala la dependencia:
-
-```bash
-pip install flask
-```
-
-## Ejecutar la aplicación
-
-```bash
-python app.py
-```
-
-Abre tu navegador en:
-
-```text
-http://127.0.0.1:5000/
-```
-
-## Funcionalidades
-
-- Registro de productos
-- Control de entradas y salidas de inventario
-- Alertas de stock bajo
-- Registro de ventas y movimientos del negocio
-- Reportes por categoría y producto
-- Inicio de sesión para administrador
-
-## Estructura del proyecto
-
-- `app.py`: lógica principal del sistema
-- `templates/index.html`: página principal del inventario
-- `templates/login.html`: acceso al sistema
-- `templates/report.html`: reportes y resumen
-- `static/style.css`: estilos visuales
-- `inventario.db`: base de datos SQLite creada automáticamente
-
-## Recomendación para entrega
-
-Esta versión puede servir como proyecto funcional para presentar. En una etapa siguiente puedes agregar:
-
-- Login con usuarios reales
-- Exportación a PDF o Excel
-- Búsqueda avanzada de productos
-- Sistema de proveedores
-- Historial de ventas por fecha
-- Dashboard visual más moderno
-
-## Autor
-
-Proyecto destinado a apoyar la gestión de inventario de una pequeña tienda.
-
+# Editors and OS
+.idea
+.vscode
+.DS_Store
+Thumbs.db
+*.swp
