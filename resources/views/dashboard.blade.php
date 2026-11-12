@@ -81,7 +81,7 @@
                 Producto
                 <select name="product_id" required>
                     <option value="">Selecciona producto</option>
-                    @foreach ($products as $product)
+                    @foreach ($allProducts as $product)
                         <option value="{{ $product->id }}">{{ $product->name }} ({{ $product->stock }})</option>
                     @endforeach
                 </select>
