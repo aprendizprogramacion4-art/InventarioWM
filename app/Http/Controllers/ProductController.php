@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InventoryMovement;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use RuntimeException;
 
 class ProductController extends Controller
 {
@@ -21,9 +24,14 @@ class ProductController extends Controller
             ->paginate(12)
             ->withQueryString();
 
+        $allProducts = Product::query()
+            ->orderBy('name')
+            ->get(['id', 'name', 'stock']);
+
         return view('dashboard', [
             'products' => $products,
-            'recentMovements' => \App\Models\InventoryMovement::with('product')->latest()->limit(8)->get(),
+            'allProducts' => $allProducts,
+            'recentMovements' => InventoryMovement::with('product')->latest()->limit(8)->get(),
             'totalProducts' => Product::count(),
             'totalUnits' => Product::sum('stock'),
             'lowStockCount' => Product::whereColumn('stock', '<=', 'minimum_stock')->count(),
@@ -43,7 +51,23 @@ class ProductController extends Controller
             'sale_price' => ['required', 'numeric', 'min:0'],
         ]);
         $data['category'] = $data['category'] ?: 'General';
-        Product::create($data);
+
+        DB::transaction(function () use ($data): void {
+            $product = Product::create($data);
+
+            if ($product->stock > 0) {
+                $movement = new InventoryMovement([
+                    'product_id' => $product->id,
+                    'type' => 'entry',
+                    'quantity' => $product->stock,
+                    'notes' => 'Existencia inicial del producto',
+                ]);
+
+                if (!$movement->save()) {
+                    throw new RuntimeException('No se pudo registrar la existencia inicial.');
+                }
+            }
+        });
 
         return redirect()->route('dashboard')->with('status', 'Producto registrado correctamente.');
     }
