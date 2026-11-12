@@ -7,6 +7,8 @@ use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
+use RuntimeException;
 
 class InventoryMovementController extends Controller
 {
@@ -19,15 +21,24 @@ class InventoryMovementController extends Controller
             'notes' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $error = DB::transaction(function () use ($data) {
+        $error = DB::transaction(function () use ($data): ?string {
             $product = Product::whereKey($data['product_id'])->lockForUpdate()->firstOrFail();
+
             if ($data['type'] === 'exit' && $product->stock < $data['quantity']) {
                 return 'Stock insuficiente para '.$product->name.'.';
             }
 
-            InventoryMovement::create($data);
+            $movement = new InventoryMovement($data);
+
+            if (!$movement->save()) {
+                throw new RuntimeException('No se pudo registrar el movimiento de inventario.');
+            }
+
             $product->stock += $data['type'] === 'entry' ? $data['quantity'] : -$data['quantity'];
-            $product->save();
+
+            if (!$product->save()) {
+                throw new RuntimeException('No se pudo actualizar la existencia del producto.');
+            }
 
             return null;
         });
