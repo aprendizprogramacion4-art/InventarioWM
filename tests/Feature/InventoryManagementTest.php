@@ -131,6 +131,59 @@ class InventoryManagementTest extends TestCase
             ->assertSee('<option value="'.$beta->id.'">Beta (0)</option>', false);
     }
 
+    public function test_guest_cannot_register_an_inventory_movement(): void
+    {
+        $product = $this->createProduct(stock: 10);
+
+        $this->post(route('movements.store'), [
+            'product_id' => $product->id,
+            'type' => 'entry',
+            'quantity' => 5,
+        ])->assertRedirect(route('login'));
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'stock' => 10,
+        ]);
+        $this->assertDatabaseCount('inventory_movements', 0);
+    }
+
+    public function test_invalid_movement_data_is_rejected_without_changing_stock(): void
+    {
+        $product = $this->createProduct(stock: 10);
+
+        $invalidRequests = [
+            [
+                'payload' => ['product_id' => 99999, 'type' => 'entry', 'quantity' => 1],
+                'field' => 'product_id',
+            ],
+            [
+                'payload' => ['product_id' => $product->id, 'type' => 'adjustment', 'quantity' => 1],
+                'field' => 'type',
+            ],
+            [
+                'payload' => ['product_id' => $product->id, 'type' => 'entry', 'quantity' => 0],
+                'field' => 'quantity',
+            ],
+            [
+                'payload' => ['product_id' => $product->id, 'type' => 'entry', 'quantity' => '1.5'],
+                'field' => 'quantity',
+            ],
+        ];
+
+        foreach ($invalidRequests as $invalidRequest) {
+            $this->withSession(['admin_authenticated' => true])
+                ->post(route('movements.store'), $invalidRequest['payload'])
+                ->assertSessionHasErrors($invalidRequest['field']);
+        }
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'stock' => 10,
+        ]);
+        $this->assertDatabaseCount('inventory_movements', 0);
+    }
+
     public function test_inventory_entry_increases_stock_and_creates_a_movement(): void
     {
         $product = $this->createProduct(stock: 10);
@@ -155,6 +208,92 @@ class InventoryManagementTest extends TestCase
             'quantity' => 5,
             'notes' => 'Compra de proveedor',
         ]);
+    }
+
+    public function test_inventory_exit_decreases_stock_and_creates_a_movement(): void
+    {
+        $product = $this->createProduct(stock: 10);
+
+        $this->withSession(['admin_authenticated' => true])
+            ->post(route('movements.store'), [
+                'product_id' => $product->id,
+                'type' => 'exit',
+                'quantity' => 4,
+                'notes' => 'Salida de prueba',
+            ])
+            ->assertRedirect(route('dashboard'));
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'stock' => 6,
+        ]);
+
+        $this->assertDatabaseHas('inventory_movements', [
+            'product_id' => $product->id,
+            'type' => 'exit',
+            'quantity' => 4,
+            'notes' => 'Salida de prueba',
+        ]);
+    }
+
+    public function test_movement_is_rolled_back_when_movement_cannot_be_saved(): void
+    {
+        $product = $this->createProduct(stock: 10);
+
+        InventoryMovement::creating(static function (InventoryMovement $movement): bool {
+            return false;
+        });
+
+        $this->withoutExceptionHandling();
+
+        try {
+            $this->withSession(['admin_authenticated' => true])
+                ->post(route('movements.store'), [
+                    'product_id' => $product->id,
+                    'type' => 'entry',
+                    'quantity' => 5,
+                ]);
+
+            $this->fail('The movement should fail when it cannot be saved.');
+        } catch (RuntimeException $exception) {
+            $this->assertSame('No se pudo registrar el movimiento de inventario.', $exception->getMessage());
+        }
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'stock' => 10,
+        ]);
+        $this->assertDatabaseCount('inventory_movements', 0);
+    }
+
+    public function test_movement_is_rolled_back_when_product_stock_cannot_be_updated(): void
+    {
+        $product = $this->createProduct(stock: 10);
+
+        Product::updating(static function (Product $product): bool {
+            return false;
+        });
+
+        $this->withoutExceptionHandling();
+
+        try {
+            $this->withSession(['admin_authenticated' => true])
+                ->post(route('movements.store'), [
+                    'product_id' => $product->id,
+                    'type' => 'entry',
+                    'quantity' => 5,
+                ]);
+
+            $this->fail('The movement should fail when product stock cannot be updated.');
+        } catch (RuntimeException $exception) {
+            $this->assertSame('No se pudo actualizar la existencia del producto.', $exception->getMessage());
+        }
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'stock' => 10,
+        ]);
+        $this->assertDatabaseCount('inventory_movements', 0);
     }
 
     public function test_exit_larger_than_available_stock_is_rejected(): void
