@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use RuntimeException;
 
 class ProductController extends Controller
 {
@@ -50,12 +51,16 @@ class ProductController extends Controller
             $product = Product::create($data);
 
             if ($product->stock > 0) {
-                InventoryMovement::create([
+                $movement = new InventoryMovement([
                     'product_id' => $product->id,
                     'type' => 'entry',
                     'quantity' => $product->stock,
                     'notes' => 'Existencia inicial del producto',
                 ]);
+
+                if (!$movement->save()) {
+                    throw new RuntimeException('No se pudo registrar la existencia inicial.');
+                }
             }
         });
 
