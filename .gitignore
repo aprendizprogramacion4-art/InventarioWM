@@ -22,6 +22,9 @@
 /database/*.sqlite
 /database/*.sqlite-journal
 
+# Tests
+/.phpunit.cache/
+
 # Editors and OS
 .idea
 .vscode
