@@ -24,8 +24,13 @@ class ProductController extends Controller
             ->paginate(12)
             ->withQueryString();
 
+        $allProducts = Product::query()
+            ->orderBy('name')
+            ->get(['id', 'name', 'stock']);
+
         return view('dashboard', [
             'products' => $products,
+            'allProducts' => $allProducts,
             'recentMovements' => InventoryMovement::with('product')->latest()->limit(8)->get(),
             'totalProducts' => Product::count(),
             'totalUnits' => Product::sum('stock'),
