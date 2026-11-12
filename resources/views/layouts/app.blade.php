@@ -12,6 +12,8 @@
         <a class="brand" href="{{ route('dashboard') }}">Inventario <span>WM</span></a>
         <nav>
             <a href="{{ route('dashboard') }}">Inventario</a>
+            <a href="{{ route('suppliers.index') }}">Proveedores</a>
+            <a href="{{ route('sales.index') }}">Ventas</a>
             <a href="{{ route('reports.index') }}">Reportes</a>
             <form method="POST" action="{{ route('logout') }}">@csrf<button class="link-button">Cerrar sesión</button></form>
         </nav>

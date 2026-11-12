@@ -5,7 +5,7 @@
     <div>
         <p class="eyebrow">Panel de administración</p>
         <h1>Inventario de la tienda</h1>
-        <p class="muted">Registra productos, controla movimientos y revisa alertas.</p>
+        <p class="muted">Registra productos, controla movimientos, proveedores y ventas.</p>
     </div>
 </section>
 
@@ -34,8 +34,22 @@
     <article class="stat success">
         <div class="stat-icon">💰</div>
         <div class="stat-content">
-            <span>Valor al costo</span>
+            <span>Inventario total</span>
             <strong>${{ number_format((float) $inventoryValue, 2) }}</strong>
+        </div>
+    </article>
+    <article class="stat info">
+        <div class="stat-icon">🏪</div>
+        <div class="stat-content">
+            <span>Proveedores</span>
+            <strong>{{ $totalSuppliers }}</strong>
+        </div>
+    </article>
+    <article class="stat purple">
+        <div class="stat-icon">🧾</div>
+        <div class="stat-content">
+            <span>Ventas</span>
+            <strong>{{ $totalSales }}</strong>
         </div>
     </article>
 </section>
@@ -52,6 +66,17 @@
             <label>
                 Categoría
                 <input name="category" value="{{ old('category') }}" placeholder="General">
+            </label>
+            <label>
+                Proveedor
+                <select name="supplier_id">
+                    <option value="">Sin proveedor</option>
+                    @foreach (
+                        App\Models\Supplier::query()->orderBy('name')->get() as $supplier
+                    )
+                        <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                    @endforeach
+                </select>
             </label>
             <label>
                 Existencia inicial
@@ -106,7 +131,7 @@
     </section>
 </div>
 
-<section class="panel">
+<section class="panel mt-lg">
     <div class="section-heading">
         <h2>Productos</h2>
         <form method="GET" action="{{ route('dashboard') }}" class="search">
@@ -121,9 +146,9 @@
                 <tr>
                     <th>Producto</th>
                     <th>Categoría</th>
+                    <th>Proveedor</th>
                     <th>Existencia</th>
                     <th>Estado</th>
-                    <th>Mínimo</th>
                     <th>Compra</th>
                     <th>Venta</th>
                     <th>Acciones</th>
@@ -138,9 +163,9 @@
                     <tr>
                         <td><strong>{{ $product->name }}</strong></td>
                         <td>{{ $product->category }}</td>
+                        <td>{{ $product->supplier?->name ?? 'Sin proveedor' }}</td>
                         <td>{{ $product->stock }}</td>
                         <td><span class="badge {{ $statusClass }}">{{ $status }}</span></td>
-                        <td>{{ $product->minimum_stock }}</td>
                         <td>${{ number_format((float) $product->buy_price, 2) }}</td>
                         <td>${{ number_format((float) $product->sale_price, 2) }}</td>
                         <td class="actions">
@@ -164,7 +189,7 @@
     {{ $products->links() }}
 </section>
 
-<section class="panel">
+<section class="panel mt-lg">
     <h2>Movimientos recientes</h2>
     <div class="table-scroll">
         <table>

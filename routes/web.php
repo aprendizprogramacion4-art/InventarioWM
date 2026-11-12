@@ -6,6 +6,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SupplierController;
 
 Route::get('/login', [AuthController::class, 'create'])->name('login');
 Route::post('/login', [AuthController::class, 'store'])->name('login.store');
@@ -18,6 +20,10 @@ Route::middleware('admin')->group(function () {
     Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::post('/movements', [InventoryMovementController::class, 'store'])->name('movements.store');
+    Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
+    Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
+    Route::get('/ventas', [SaleController::class, 'index'])->name('sales.index');
+    Route::post('/ventas', [SaleController::class, 'store'])->name('sales.store');
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/products.csv', [ReportController::class, 'csv'])->name('reports.csv');
 });
