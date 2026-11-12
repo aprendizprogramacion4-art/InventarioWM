@@ -25,7 +25,7 @@ class InventoryManagementTest extends TestCase
         $this->assertDatabaseCount('products', 0);
     }
 
-    public function test_admin_can_register_a_product(): void
+    public function test_admin_can_register_a_product_and_its_initial_stock_movement(): void
     {
         $this->withSession(['admin_authenticated' => true])
             ->post(route('products.store'), [
@@ -43,6 +43,36 @@ class InventoryManagementTest extends TestCase
             'category' => 'Abarrotes',
             'stock' => 10,
         ]);
+
+        $this->assertDatabaseHas('inventory_movements', [
+            'product_id' => Product::where('name', 'Arroz')->value('id'),
+            'type' => 'entry',
+            'quantity' => 10,
+            'notes' => 'Existencia inicial del producto',
+        ]);
+
+        $this->assertDatabaseCount('inventory_movements', 1);
+    }
+
+    public function test_admin_can_register_a_product_without_an_initial_stock_movement(): void
+    {
+        $this->withSession(['admin_authenticated' => true])
+            ->post(route('products.store'), [
+                'name' => 'Leche',
+                'category' => 'Lácteos',
+                'stock' => 0,
+                'minimum_stock' => 2,
+                'buy_price' => 2500,
+                'sale_price' => 3200,
+            ])
+            ->assertRedirect(route('dashboard'));
+
+        $this->assertDatabaseHas('products', [
+            'name' => 'Leche',
+            'stock' => 0,
+        ]);
+
+        $this->assertDatabaseCount('inventory_movements', 0);
     }
 
     public function test_inventory_entry_increases_stock_and_creates_a_movement(): void
