@@ -104,6 +104,33 @@ class InventoryManagementTest extends TestCase
         $this->assertDatabaseCount('inventory_movements', 0);
     }
 
+    public function test_movement_selector_includes_products_beyond_the_first_page(): void
+    {
+        $lastProduct = null;
+
+        foreach (range(1, 13) as $number) {
+            $lastProduct = $this->createNamedProduct(sprintf('Producto %02d', $number));
+        }
+
+        $this->withSession(['admin_authenticated' => true])
+            ->get(route('dashboard'))
+            ->assertViewHas('products', fn ($products): bool => $products->count() === 12 && $products->total() === 13)
+            ->assertViewHas('allProducts', fn ($allProducts): bool => $allProducts->count() === 13)
+            ->assertSee('<option value="'.$lastProduct->id.'">Producto 13 (0)</option>', false);
+    }
+
+    public function test_movement_selector_is_not_limited_by_product_search(): void
+    {
+        $this->createNamedProduct('Alpha');
+        $beta = $this->createNamedProduct('Beta');
+
+        $this->withSession(['admin_authenticated' => true])
+            ->get(route('dashboard', ['search' => 'Alpha']))
+            ->assertViewHas('products', fn ($products): bool => $products->total() === 1)
+            ->assertViewHas('allProducts', fn ($allProducts): bool => $allProducts->count() === 2)
+            ->assertSee('<option value="'.$beta->id.'">Beta (0)</option>', false);
+    }
+
     public function test_inventory_entry_increases_stock_and_creates_a_movement(): void
     {
         $product = $this->createProduct(stock: 10);
@@ -169,6 +196,18 @@ class InventoryManagementTest extends TestCase
             ->assertSessionHasErrors('product');
 
         $this->assertDatabaseHas('products', ['id' => $product->id]);
+    }
+
+    private function createNamedProduct(string $name): Product
+    {
+        return Product::create([
+            'name' => $name,
+            'category' => 'Pruebas',
+            'stock' => 0,
+            'minimum_stock' => 2,
+            'buy_price' => 1000,
+            'sale_price' => 1500,
+        ]);
     }
 
     private function createProduct(int $stock): Product
