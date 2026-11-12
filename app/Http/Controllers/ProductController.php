@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InventoryMovement;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class ProductController extends Controller
@@ -23,7 +25,7 @@ class ProductController extends Controller
 
         return view('dashboard', [
             'products' => $products,
-            'recentMovements' => \App\Models\InventoryMovement::with('product')->latest()->limit(8)->get(),
+            'recentMovements' => InventoryMovement::with('product')->latest()->limit(8)->get(),
             'totalProducts' => Product::count(),
             'totalUnits' => Product::sum('stock'),
             'lowStockCount' => Product::whereColumn('stock', '<=', 'minimum_stock')->count(),
@@ -43,7 +45,19 @@ class ProductController extends Controller
             'sale_price' => ['required', 'numeric', 'min:0'],
         ]);
         $data['category'] = $data['category'] ?: 'General';
-        Product::create($data);
+
+        DB::transaction(function () use ($data): void {
+            $product = Product::create($data);
+
+            if ($product->stock > 0) {
+                InventoryMovement::create([
+                    'product_id' => $product->id,
+                    'type' => 'entry',
+                    'quantity' => $product->stock,
+                    'notes' => 'Existencia inicial del producto',
+                ]);
+            }
+        });
 
         return redirect()->route('dashboard')->with('status', 'Producto registrado correctamente.');
     }
