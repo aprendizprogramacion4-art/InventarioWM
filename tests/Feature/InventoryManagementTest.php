@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\InventoryMovement;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use RuntimeException;
 use Tests\TestCase;
 
 class InventoryManagementTest extends TestCase
@@ -72,6 +73,34 @@ class InventoryManagementTest extends TestCase
             'stock' => 0,
         ]);
 
+        $this->assertDatabaseCount('inventory_movements', 0);
+    }
+
+    public function test_product_creation_is_rolled_back_when_initial_movement_cannot_be_saved(): void
+    {
+        InventoryMovement::creating(static function (InventoryMovement $movement): bool {
+            return false;
+        });
+
+        $this->withoutExceptionHandling();
+
+        try {
+            $this->withSession(['admin_authenticated' => true])
+                ->post(route('products.store'), [
+                    'name' => 'Azúcar',
+                    'category' => 'Abarrotes',
+                    'stock' => 8,
+                    'minimum_stock' => 2,
+                    'buy_price' => 3000,
+                    'sale_price' => 3800,
+                ]);
+
+            $this->fail('The product creation should fail when the initial movement cannot be saved.');
+        } catch (RuntimeException $exception) {
+            $this->assertSame('No se pudo registrar la existencia inicial.', $exception->getMessage());
+        }
+
+        $this->assertDatabaseCount('products', 0);
         $this->assertDatabaseCount('inventory_movements', 0);
     }
 
