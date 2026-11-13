@@ -174,6 +174,7 @@
                     <th>Producto</th>
                     <th>Movimiento</th>
                     <th>Cantidad</th>
+                    <th>Registrado por</th>
                     <th>Nota</th>
                 </tr>
             </thead>
@@ -188,11 +189,12 @@
                             </span>
                         </td>
                         <td>{{ $movement->quantity }}</td>
+                        <td>{{ $movement->registered_by ?? 'Sistema' }}</td>
                         <td>{{ $movement->notes ?: '—' }}</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="empty">Todavía no hay movimientos.</td>
+                        <td colspan="6" class="empty">Todavía no hay movimientos.</td>
                     </tr>
                 @endforelse
             </tbody>
