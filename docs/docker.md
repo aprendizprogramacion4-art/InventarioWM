@@ -19,11 +19,14 @@ Esta configuración está pensada para desarrollo local y conserva el motor SQLi
 
 2. Genera la clave de Laravel si `APP_KEY` está vacía:
 
+   Primero construye la imagen y solicita una clave sin modificar archivos dentro del contenedor:
+
    ```powershell
-   docker compose run --rm app php artisan key:generate
+   docker compose build
+   docker compose run --rm app php artisan key:generate --show
    ```
 
-   Si el comando anterior no puede iniciar porque todavía no existe `.env`, crea primero el archivo y vuelve a ejecutarlo.
+   Copia la clave que imprime el comando y pégala en la variable `APP_KEY` del archivo `.env` de Windows. No compartas esa clave.
 
 3. Configura `INVENTORY_ADMIN_USERNAME` y `INVENTORY_ADMIN_PASSWORD_HASH` en `.env`. Genera el hash con:
 
