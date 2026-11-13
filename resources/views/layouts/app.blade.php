@@ -12,7 +12,10 @@
         <a class="brand" href="{{ route('dashboard') }}">Inventario <span>WM</span></a>
         <nav>
             <a href="{{ route('dashboard') }}">Inventario</a>
-            <a href="{{ route('reports.index') }}">Reportes</a>
+            @if (session('role') === 'admin')
+                <a href="{{ route('reports.index') }}">Reportes</a>
+            @endif
+            <span class="muted">{{ session('admin_username') }} · {{ session('role') === 'admin' ? 'Administrador' : 'Empleado' }}</span>
             <form method="POST" action="{{ route('logout') }}">@csrf<button class="link-button">Cerrar sesión</button></form>
         </nav>
     </header>

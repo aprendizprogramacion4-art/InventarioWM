@@ -14,8 +14,16 @@ class ProductController extends Controller
 {
     public function index(Request $request): View
     {
+        $isAdmin = $request->session()->get('role') === 'admin';
         $search = trim((string) $request->query('search', ''));
+        $productColumns = ['id', 'name', 'category', 'stock', 'minimum_stock', 'sale_price'];
+
+        if ($isAdmin) {
+            $productColumns[] = 'buy_price';
+        }
+
         $products = Product::query()
+            ->select($productColumns)
             ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('category', 'like', "%{$search}%");
@@ -24,19 +32,18 @@ class ProductController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        $allProducts = Product::query()
-            ->orderBy('name')
-            ->get(['id', 'name', 'stock']);
-
         return view('dashboard', [
             'products' => $products,
-            'allProducts' => $allProducts,
+            'allProducts' => Product::query()->orderBy('name')->get(['id', 'name', 'stock']),
             'recentMovements' => InventoryMovement::with('product')->latest()->limit(8)->get(),
             'totalProducts' => Product::count(),
             'totalUnits' => Product::sum('stock'),
             'lowStockCount' => Product::whereColumn('stock', '<=', 'minimum_stock')->count(),
-            'inventoryValue' => Product::selectRaw('COALESCE(SUM(stock * buy_price), 0) as total')->value('total'),
+            'inventoryValue' => $isAdmin
+                ? Product::selectRaw('COALESCE(SUM(stock * buy_price), 0) as total')->value('total')
+                : null,
             'search' => $search,
+            'isAdmin' => $isAdmin,
         ]);
     }
 
@@ -52,7 +59,7 @@ class ProductController extends Controller
         ]);
         $data['category'] = $data['category'] ?: 'General';
 
-        DB::transaction(function () use ($data): void {
+        DB::transaction(function () use ($data, $request): void {
             $product = Product::create($data);
 
             if ($product->stock > 0) {
@@ -61,6 +68,7 @@ class ProductController extends Controller
                     'type' => 'entry',
                     'quantity' => $product->stock,
                     'notes' => 'Existencia inicial del producto',
+                    'registered_by' => $request->session()->get('admin_username', 'Sistema'),
                 ]);
 
                 if (!$movement->save()) {
