@@ -3,9 +3,10 @@ FROM php:8.5-apache
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     libonig-dev \
+    libxml2-dev \
     libzip-dev \
     unzip \
-    && docker-php-ext-install bcmath mbstring pdo_sqlite zip \
+    && docker-php-ext-install bcmath mbstring pdo_sqlite xml zip \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
