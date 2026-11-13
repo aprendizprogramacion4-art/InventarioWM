@@ -125,6 +125,30 @@ php artisan serve
 
 Abre http://127.0.0.1:8000.
 
+## Ejecutar con Docker
+
+El repositorio incluye una configuración de Docker Compose para ejecutar Laravel con Apache, PHP 8.5 y SQLite sin instalar PHP ni Composer directamente en Windows.
+
+1. Instala y abre Docker Desktop.
+2. Crea tu archivo `.env` a partir de `.env.example` si todavía no existe. Configura `APP_KEY`, `INVENTORY_ADMIN_USERNAME` e `INVENTORY_ADMIN_PASSWORD_HASH` como se explica en la sección de instalación local. No compartas ni subas `.env`.
+3. Conserva el archivo `database/database.sqlite` si ya contiene información. Si no existe, créalo desde PowerShell:
+
+   ```powershell
+   New-Item database/database.sqlite -ItemType File
+   ```
+
+4. Construye e inicia el contenedor:
+
+   ```powershell
+   docker compose up -d --build
+   ```
+
+5. Abre [http://localhost:8081](http://localhost:8081).
+
+En una base de datos nueva, crea las tablas ejecutando `docker compose exec app php artisan migrate --force`. No ejecutes `migrate:fresh` sobre una base con datos. Para consultar los registros usa `docker compose logs -f app`; para detener el servicio usa `docker compose down`.
+
+La guía completa está en [docs/docker.md](docs/docker.md). Esta configuración está destinada al desarrollo local; para producción se requiere endurecer la configuración, desactivar el modo debug y habilitar HTTPS.
+
 ## Ejecutar las pruebas
 
 Con las dependencias instaladas, ejecuta:
