@@ -14,9 +14,7 @@ class EnsureRole
             return redirect()->route('login');
         }
 
-        $userRole = $request->session()->get('role');
-
-        if (!in_array($userRole, $roles, true)) {
+        if (!in_array($request->session()->get('role'), $roles, true)) {
             abort(403, 'No tienes permisos para acceder a esta sección.');
         }
 

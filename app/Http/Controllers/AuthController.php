@@ -25,16 +25,29 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $username = (string) config('inventory.admin_username');
-        $passwordHash = (string) config('inventory.admin_password_hash');
+        $role = null;
+        $username = $credentials['username'];
+        $adminUsername = (string) config('inventory.admin_username');
+        $adminHash = (string) config('inventory.admin_password_hash');
+        $employeeUsername = (string) config('inventory.employee_username');
+        $employeeHash = (string) config('inventory.employee_password_hash');
 
-        if ($credentials['username'] !== $username || !$passwordHash || !Hash::check($credentials['password'], $passwordHash)) {
+        if ($username === $adminUsername && $adminHash !== '' && Hash::check($credentials['password'], $adminHash)) {
+            $role = 'admin';
+        } elseif ($username === $employeeUsername && $employeeHash !== '' && Hash::check($credentials['password'], $employeeHash)) {
+            $role = 'employee';
+        }
+
+        if ($role === null) {
             return back()->withErrors(['username' => 'Usuario o contraseña incorrectos.'])->onlyInput('username');
         }
 
         $request->session()->regenerate();
-        $request->session()->put('admin_authenticated', true);
-        $request->session()->put('admin_username', $credentials['username']);
+        $request->session()->put([
+            'admin_authenticated' => true,
+            'admin_username' => $username,
+            'role' => $role,
+        ]);
 
         return redirect()->intended(route('dashboard'));
     }
