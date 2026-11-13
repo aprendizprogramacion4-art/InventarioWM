@@ -19,6 +19,8 @@ class InventoryMovementController extends Controller
             'notes' => ['nullable', 'string', 'max:500'],
         ]);
 
+        $data['registered_by'] = session('admin_username', 'admin');
+
         $error = DB::transaction(function () use ($data) {
             $product = Product::whereKey($data['product_id'])->lockForUpdate()->firstOrFail();
             if ($data['type'] === 'exit' && $product->stock < $data['quantity']) {
