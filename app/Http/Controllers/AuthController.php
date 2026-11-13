@@ -34,6 +34,7 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
         $request->session()->put('admin_authenticated', true);
+        $request->session()->put('admin_username', $credentials['username']);
 
         return redirect()->intended(route('dashboard'));
     }
