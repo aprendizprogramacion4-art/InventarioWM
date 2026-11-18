@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Hash;
 
 class GenerateInventoryPassword extends Command
 {
-    protected $signature = 'inventory:password {password? : Contraseña del administrador (opcional)}';
+    protected $signature = 'inventory:password';
     protected $description = 'Genera un hash seguro para la contraseña del administrador';
 
     public function handle(): int
     {
-        $password = $this->argument('password') ?: $this->secret('Escribe la contraseña del administrador');
+        $password = $this->secret('Escribe la contraseña del administrador');
 
         if (!is_string($password) || strlen($password) < 8) {
             $this->error('La contraseña debe tener al menos 8 caracteres.');
