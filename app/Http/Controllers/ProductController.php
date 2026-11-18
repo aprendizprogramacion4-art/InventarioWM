@@ -62,6 +62,8 @@ class ProductController extends Controller
                     'product_id' => $product->id,
                     'type' => 'entry',
                     'quantity' => $product->stock,
+                    'stock_before' => 0,
+                    'stock_after' => (int) $product->stock,
                     'notes' => 'Existencia inicial del producto',
                     'created_by' => (string) session('inventory_username', config('inventory.admin_username', 'admin')),
                 ]);
