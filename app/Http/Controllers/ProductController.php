@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\InventoryMovement;
 use App\Models\Product;
+use App\Models\Supplier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use RuntimeException;
 
@@ -16,9 +20,12 @@ class ProductController extends Controller
     {
         $search = trim((string) $request->query('search', ''));
         $products = Product::query()
+            ->with(['supplier:id,name', 'categoryRecord:id,name'])
             ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
                 $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('category', 'like', "%{$search}%");
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('category', 'like', "%{$search}%")
+                    ->orWhereHas('supplier', fn ($supplierQuery) => $supplierQuery->where('name', 'like', "%{$search}%"));
             }))
             ->orderBy('name')
             ->paginate(12)
@@ -29,6 +36,8 @@ class ProductController extends Controller
         return view('dashboard', [
             'products' => $products,
             'allProducts' => $allProducts,
+            'categories' => Category::query()->orderBy('name')->get(['id', 'name']),
+            'suppliers' => Supplier::query()->orderBy('name')->get(['id', 'name']),
             'recentMovements' => InventoryMovement::with('product')->latest()->limit(8)->get(),
             'totalProducts' => Product::count(),
             'totalUnits' => Product::sum('stock'),
@@ -40,15 +49,21 @@ class ProductController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $request->merge([
+            'sku' => Str::upper(trim((string) $request->input('sku'))),
+        ]);
+
         $data = $request->validate([
+            'sku' => ['required', 'alpha_dash', 'max:64', 'unique:products,sku'],
             'name' => ['required', 'string', 'max:150'],
-            'category' => ['nullable', 'string', 'max:100'],
+            'category_id' => ['required', 'integer', 'exists:categories,id'],
+            'supplier_id' => ['nullable', 'integer', 'exists:suppliers,id'],
             'stock' => ['required', 'integer', 'min:0'],
             'minimum_stock' => ['required', 'integer', 'min:0'],
             'buy_price' => ['required', 'numeric', 'min:0'],
             'sale_price' => ['required', 'numeric', 'min:0'],
         ]);
-        $data['category'] = $data['category'] ?: 'General';
+        $data['category'] = Category::findOrFail($data['category_id'])->name;
 
         DB::transaction(function () use ($data): void {
             $product = new Product($data);
@@ -79,19 +94,29 @@ class ProductController extends Controller
 
     public function edit(Product $product): View
     {
-        return view('products.edit', compact('product'));
+        return view('products.edit', [
+            'product' => $product,
+            'categories' => Category::query()->orderBy('name')->get(['id', 'name']),
+            'suppliers' => Supplier::query()->orderBy('name')->get(['id', 'name']),
+        ]);
     }
 
     public function update(Request $request, Product $product): RedirectResponse
     {
+        $request->merge([
+            'sku' => Str::upper(trim((string) $request->input('sku'))),
+        ]);
+
         $data = $request->validate([
+            'sku' => ['required', 'alpha_dash', 'max:64', Rule::unique('products', 'sku')->ignore($product->id)],
             'name' => ['required', 'string', 'max:150'],
-            'category' => ['nullable', 'string', 'max:100'],
+            'category_id' => ['required', 'integer', 'exists:categories,id'],
+            'supplier_id' => ['nullable', 'integer', 'exists:suppliers,id'],
             'minimum_stock' => ['required', 'integer', 'min:0'],
             'buy_price' => ['required', 'numeric', 'min:0'],
             'sale_price' => ['required', 'numeric', 'min:0'],
         ]);
-        $data['category'] = $data['category'] ?: 'General';
+        $data['category'] = Category::findOrFail($data['category_id'])->name;
         $product->update($data);
 
         return redirect()->route('dashboard')->with('status', 'Producto actualizado.');

@@ -24,15 +24,19 @@ class ReportController extends Controller
 
     public function csv(): Response
     {
-        $products = Product::orderBy('name')->get(['name', 'category', 'stock', 'minimum_stock', 'buy_price', 'sale_price']);
+        $products = Product::with('supplier:id,name')
+            ->orderBy('name')
+            ->get(['sku', 'name', 'category', 'supplier_id', 'stock', 'minimum_stock', 'buy_price', 'sale_price']);
         $stream = fopen('php://temp', 'r+');
 
-        fputcsv($stream, ['Producto', 'Categoría', 'Existencias', 'Stock mínimo', 'Precio compra', 'Precio venta']);
+        fputcsv($stream, ['SKU', 'Producto', 'Categoría', 'Proveedor', 'Existencias', 'Stock mínimo', 'Precio compra', 'Precio venta']);
 
         foreach ($products as $product) {
             fputcsv($stream, [
+                $this->safeSpreadsheetText($product->sku ?? ''),
                 $this->safeSpreadsheetText($product->name),
                 $this->safeSpreadsheetText($product->category),
+                $this->safeSpreadsheetText($product->supplier?->name ?? ''),
                 $product->stock,
                 $product->minimum_stock,
                 $product->buy_price,

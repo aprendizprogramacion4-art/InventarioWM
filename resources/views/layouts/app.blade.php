@@ -21,6 +21,8 @@
                 <a href="{{ route('reports.index') }}" @if (request()->routeIs('reports.*')) aria-current="page" @endif><span class="nav-number">03</span>Reportes</a>
                 @if (session('inventory_role') === 'admin' || session('admin_authenticated'))
                     <a href="{{ route('users.index') }}" @if (request()->routeIs('users.*')) aria-current="page" @endif><span class="nav-number">04</span>Usuarios</a>
+                    <a href="{{ route('categories.index') }}" @if (request()->routeIs('categories.*')) aria-current="page" @endif><span class="nav-number">05</span>Categorías</a>
+                    <a href="{{ route('suppliers.index') }}" @if (request()->routeIs('suppliers.*')) aria-current="page" @endif><span class="nav-number">06</span>Proveedores</a>
                 @endif
                 <span class="small muted">{{ session('inventory_username', 'Administrador') }}</span>
                 <form method="POST" action="{{ route('logout') }}">@csrf<button class="link-button" type="submit">Salir <span aria-hidden="true">↗</span></button></form>
