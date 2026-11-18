@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - Inventario WM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">Resumen general</p>
+                <h1>Reportes</h1>
+            </div>
+            <div class="topbar-actions">
+                <a href="{{ url_for('index') }}" class="nav-button">Volver al inventario</a>
+                <a href="{{ url_for('logout') }}" class="nav-button secondary">Cerrar sesión</a>
+            </div>
+        </header>
+
+        <section class="stats">
+            <div class="card">
+                <span>Entradas</span>
+                <strong>{{ total_entries }}</strong>
+            </div>
+            <div class="card">
+                <span>Salidas</span>
+                <strong>{{ total_exits }}</strong>
+            </div>
+            <div class="card success">
+                <span>Ingresos estimados</span>
+                <strong>${{ '%.2f' | format(total_income) }}</strong>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Inventario por categoría</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Categoría</th>
+                            <th>Productos</th>
+                            <th>Unidades</th>
+                            <th>Precio venta promedio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in summary %}
+                            <tr>
+                                <td>{{ item['category'] }}</td>
+                                <td>{{ item['total_products'] }}</td>
+                                <td>{{ item['total_units'] }}</td>
+                                <td>${{ '%.2f' | format(item['avg_sale_price']) }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Productos con mayor movimiento</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Entradas</th>
+                            <th>Salidas</th>
+                            <th>Ingresos estimados</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in movement_summary %}
+                            <tr>
+                                <td>{{ item['name'] }}</td>
+                                <td>{{ item['entradas'] }}</td>
+                                <td>{{ item['salidas'] }}</td>
+                                <td>${{ '%.2f' | format(item['ingresos_est']) }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
+
