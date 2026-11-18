@@ -126,12 +126,16 @@ class InventoryManagementTest extends TestCase
         $this->createNamedProduct('Alpha');
         $beta = $this->createNamedProduct('Beta');
 
-        $this->withSession(['admin_authenticated' => true])
+        $response = $this->withSession(['admin_authenticated' => true])
             ->get(route('dashboard', ['search' => 'Alpha']))
             ->assertViewHas('products', fn ($products): bool => $products->total() === 1)
             ->assertSee('value="'.$beta->id.'"', false)
-            ->assertSee('Beta (0 disponibles)')
-            ->assertSee('<option value="'.$beta->id.'">Beta (0 disponibles)</option>', false);
+            ->assertSee('Beta (0 disponibles)');
+
+        $this->assertMatchesRegularExpression(
+            '/<option\\s+value="'.$beta->id.'"\\s*>Beta \\(0 disponibles\\)<\\/option>/',
+            $response->getContent()
+        );
     }
 
     public function test_inventory_entry_increases_stock_and_creates_a_movement(): void
