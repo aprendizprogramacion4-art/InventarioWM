@@ -13,7 +13,8 @@ Aplicación web para administrar el inventario de una tienda pequeña. Está con
 - Registro de entradas y salidas con actualización transaccional del stock.
 - Validación para impedir salidas superiores a las existencias disponibles.
 - Alertas de stock bajo y resumen del valor del inventario.
-- Historial completo con filtros por producto, tipo y fecha; cada movimiento nuevo conserva el nombre de usuario que lo registró.
+- Historial completo con filtros por producto, tipo y fecha; cada movimiento nuevo conserva el usuario responsable, el saldo anterior y el saldo posterior.
+- La existencia inicial también queda trazada como un movimiento de saldo cero al stock inicial. Los movimientos históricos anteriores a esta mejora muestran sus saldos como no disponibles, sin inventar valores retrospectivos.
 - Reportes por categoría y exportación a CSV con protección contra fórmulas de hoja de cálculo.
 - Interfaz adaptable a computadores, tabletas y celulares.
 
@@ -163,4 +164,4 @@ InventarioWM/
 
 ## Mejoras que quedan para una siguiente etapa
 
-Quedan pendientes el catálogo independiente de categorías y proveedores, los códigos únicos de producto y los ajustes de inventario con saldo anterior y nuevo. También conviene ampliar la gestión de cuentas con edición, desactivación y restablecimiento de contraseñas.
+Quedan pendientes el catálogo independiente de categorías y proveedores y los códigos únicos de producto. También conviene ampliar la gestión de cuentas con edición, desactivación y restablecimiento de contraseñas.
