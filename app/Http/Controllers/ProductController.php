@@ -24,9 +24,7 @@ class ProductController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        $allProducts = Product::query()
-            ->orderBy('name')
-            ->get(['id', 'name', 'stock']);
+        $allProducts = Product::query()->orderBy('name')->get(['id', 'name', 'stock']);
 
         return view('dashboard', [
             'products' => $products,
@@ -65,7 +63,7 @@ class ProductController extends Controller
                     'type' => 'entry',
                     'quantity' => $product->stock,
                     'notes' => 'Existencia inicial del producto',
-                    'created_by' => (string) config('inventory.admin_username', 'admin'),
+                    'created_by' => (string) session('inventory_username', config('inventory.admin_username', 'admin')),
                 ]);
 
                 if (!$movement->save()) {
