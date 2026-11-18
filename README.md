@@ -8,8 +8,9 @@ Aplicación web para administrar el inventario de una tienda pequeña. Está con
 - Dos roles: administrador y empleado, con permisos diferenciados.
 - Módulo para que el administrador cree y elimine cuentas de empleados.
 - Protección contra intentos repetidos de inicio de sesión.
-- Registro, edición y eliminación protegida de productos.
-- Búsqueda por nombre o categoría y paginación.
+- Registro, edición y eliminación protegida de productos con SKU único.
+- Catálogos administrables de categorías y proveedores; cada producto se vincula a una categoría y puede asociarse opcionalmente a un proveedor.
+- Búsqueda por nombre, SKU, categoría o proveedor, con paginación.
 - Registro de entradas y salidas con actualización transaccional del stock.
 - Validación para impedir salidas superiores a las existencias disponibles.
 - Alertas de stock bajo y resumen del valor del inventario.
@@ -160,8 +161,8 @@ InventarioWM/
 
 - **Administrador:** conserva el acceso configurado mediante `INVENTORY_ADMIN_USERNAME` e `INVENTORY_ADMIN_PASSWORD_HASH` en `.env`. Puede gestionar productos, movimientos, reportes y cuentas de empleados.
 - **Empleado:** se crea desde el módulo **Usuarios**. Puede consultar el inventario, registrar entradas y salidas, consultar el historial y ver reportes. No puede crear, editar ni eliminar productos, ni administrar cuentas.
-- Las cuentas de empleados se guardan en la tabla `users`. Si ya tienes una instalación, ejecuta `php artisan migrate` para crearla; esta migración no elimina los productos ni los movimientos existentes.
+- Las cuentas de empleados se guardan en la tabla `users`. Si ya tienes una instalación, ejecuta `php artisan migrate` para crearla; las migraciones nuevas conservan productos y movimientos y agregan catálogos relacionados.
 
 ## Mejoras que quedan para una siguiente etapa
 
-Quedan pendientes el catálogo independiente de categorías y proveedores y los códigos únicos de producto. También conviene ampliar la gestión de cuentas con edición, desactivación y restablecimiento de contraseñas.
+Quedan pendientes la edición de datos de categorías y proveedores, los códigos de barras opcionales y la ampliación de la gestión de cuentas con edición, desactivación y restablecimiento de contraseñas.

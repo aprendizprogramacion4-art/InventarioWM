@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\InventoryMovement;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -28,10 +29,13 @@ class InventoryManagementTest extends TestCase
 
     public function test_admin_can_register_a_product_and_its_initial_stock_movement(): void
     {
+        $category = Category::create(['name' => 'Abarrotes']);
+
         $this->withSession(['admin_authenticated' => true])
             ->post(route('products.store'), [
+                'sku' => 'wm-arroz-001',
                 'name' => 'Arroz',
-                'category' => 'Abarrotes',
+                'category_id' => $category->id,
                 'stock' => 10,
                 'minimum_stock' => 2,
                 'buy_price' => 2500,
@@ -40,8 +44,10 @@ class InventoryManagementTest extends TestCase
             ->assertRedirect(route('dashboard'));
 
         $this->assertDatabaseHas('products', [
+            'sku' => 'WM-ARROZ-001',
             'name' => 'Arroz',
             'category' => 'Abarrotes',
+            'category_id' => $category->id,
             'stock' => 10,
         ]);
 
@@ -60,10 +66,13 @@ class InventoryManagementTest extends TestCase
 
     public function test_admin_can_register_a_product_without_an_initial_stock_movement(): void
     {
+        $category = Category::create(['name' => 'Lácteos']);
+
         $this->withSession(['admin_authenticated' => true])
             ->post(route('products.store'), [
+                'sku' => 'WM-LECHE-001',
                 'name' => 'Leche',
-                'category' => 'Lácteos',
+                'category_id' => $category->id,
                 'stock' => 0,
                 'minimum_stock' => 2,
                 'buy_price' => 2500,
@@ -79,8 +88,43 @@ class InventoryManagementTest extends TestCase
         $this->assertDatabaseCount('inventory_movements', 0);
     }
 
+
+    public function test_product_sku_is_unique_without_case_duplicates(): void
+    {
+        $category = Category::create(['name' => 'Despensa']);
+
+        Product::create([
+            'sku' => 'WM-ARROZ-002',
+            'name' => 'Arroz existente',
+            'category' => 'Despensa',
+            'category_id' => $category->id,
+            'stock' => 0,
+            'minimum_stock' => 2,
+            'buy_price' => 1000,
+            'sale_price' => 1500,
+        ]);
+
+        $this->withSession(['admin_authenticated' => true])
+            ->from(route('dashboard'))
+            ->post(route('products.store'), [
+                'sku' => 'wm-arroz-002',
+                'name' => 'Otro arroz',
+                'category_id' => $category->id,
+                'stock' => 0,
+                'minimum_stock' => 2,
+                'buy_price' => 1000,
+                'sale_price' => 1500,
+            ])
+            ->assertRedirect(route('dashboard'))
+            ->assertSessionHasErrors('sku');
+
+        $this->assertDatabaseCount('products', 1);
+    }
+
     public function test_product_creation_is_rolled_back_when_initial_movement_cannot_be_saved(): void
     {
+        $category = Category::create(['name' => 'Azúcar']);
+
         InventoryMovement::creating(static function (InventoryMovement $movement): bool {
             return false;
         });
@@ -90,8 +134,9 @@ class InventoryManagementTest extends TestCase
         try {
             $this->withSession(['admin_authenticated' => true])
                 ->post(route('products.store'), [
+                    'sku' => 'WM-AZUCAR-001',
                     'name' => 'Azúcar',
-                    'category' => 'Abarrotes',
+                    'category_id' => $category->id,
                     'stock' => 8,
                     'minimum_stock' => 2,
                     'buy_price' => 3000,

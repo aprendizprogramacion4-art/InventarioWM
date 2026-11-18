@@ -14,6 +14,9 @@
 - Never modify or expose real `.env` values, credentials, database files, or secrets.
 
 ## Inventory business rules
+- Every new product must have a unique SKU and a valid category catalog reference.
+- Supplier assignment is optional; categories and suppliers in use must not be hard-deleted.
+- Preserve the legacy product category label while synchronizing it with the selected category record for compatibility with existing reports.
 - Every stock entry or exit must create an inventory movement.
 - Every new movement must persist `stock_before` and `stock_after` in the same transaction as the product stock update; historical rows may keep these nullable fields empty when their original balances are unknown.
 - Movement creation and product stock updates must remain atomic in a database transaction.
