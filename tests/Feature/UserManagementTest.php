@@ -90,6 +90,8 @@ class UserManagementTest extends TestCase
             'product_id' => $product->id,
             'created_by' => 'employee.audit',
             'quantity' => 3,
+            'stock_before' => 4,
+            'stock_after' => 7,
         ]);
     }
 
