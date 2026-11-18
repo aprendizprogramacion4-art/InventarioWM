@@ -50,7 +50,7 @@ class InventoryManagementTest extends TestCase
             'type' => 'entry',
             'quantity' => 10,
             'notes' => 'Existencia inicial del producto',
-            'created_by' => 'admin',
+            'created_by' => config('inventory.admin_username', 'admin'),
         ]);
 
         $this->assertDatabaseCount('inventory_movements', 1);
@@ -130,7 +130,7 @@ class InventoryManagementTest extends TestCase
             ->get(route('dashboard', ['search' => 'Alpha']))
             ->assertViewHas('products', fn ($products): bool => $products->total() === 1)
             ->assertSee('value="'.$beta->id.'"', false)
-            ->assertSee('Beta (0 disponibles)');
+            ->assertSee('Beta (0 disponibles)')
             ->assertSee('<option value="'.$beta->id.'">Beta (0 disponibles)</option>', false);
     }
 
@@ -159,6 +159,38 @@ class InventoryManagementTest extends TestCase
             'notes' => 'Compra de proveedor',
             'created_by' => 'admin',
         ]);
+    }
+
+    public function test_inventory_movement_and_stock_are_rolled_back_when_movement_cannot_be_saved(): void
+    {
+        $product = $this->createProduct(stock: 10);
+
+        InventoryMovement::creating(static function (InventoryMovement $movement): bool {
+            return false;
+        });
+
+        $this->withoutExceptionHandling();
+
+        try {
+            $this->withSession(['admin_authenticated' => true])
+                ->post(route('movements.store'), [
+                    'product_id' => $product->id,
+                    'type' => 'entry',
+                    'quantity' => 5,
+                    'notes' => 'Movimiento de prueba',
+                ]);
+
+            $this->fail('The movement should fail when it cannot be saved.');
+        } catch (RuntimeException $exception) {
+            $this->assertSame('No se pudo registrar el movimiento de inventario.', $exception->getMessage());
+        }
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'stock' => 10,
+        ]);
+
+        $this->assertDatabaseCount('inventory_movements', 0);
     }
 
     public function test_exit_larger_than_available_stock_is_rejected(): void
