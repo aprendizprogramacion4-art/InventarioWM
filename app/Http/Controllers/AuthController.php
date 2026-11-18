@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Cache\RateLimiter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class AuthController extends Controller
 
     public function create(): View|RedirectResponse
     {
-        if (session('admin_authenticated')) {
+        if (session('inventory_authenticated') || session('admin_authenticated')) {
             return redirect()->route('dashboard');
         }
 
@@ -40,13 +41,13 @@ class AuthController extends Controller
                 ->onlyInput('username');
         }
 
-        $username = (string) config('inventory.admin_username');
-        $passwordHash = (string) config('inventory.admin_password_hash');
-        $validCredentials = $credentials['username'] === $username
-            && $passwordHash !== ''
-            && Hash::check($credentials['password'], $passwordHash);
+        $configuredAdmin = $credentials['username'] === (string) config('inventory.admin_username')
+            && (string) config('inventory.admin_password_hash') !== ''
+            && Hash::check($credentials['password'], (string) config('inventory.admin_password_hash'));
+        $user = User::query()->where('username', $credentials['username'])->where('is_active', true)->first();
+        $validEmployee = $user !== null && $user->role === 'employee' && Hash::check($credentials['password'], $user->password);
 
-        if (!$validCredentials) {
+        if (!$configuredAdmin && !$validEmployee) {
             $limiter->hit($throttleKey, self::LOGIN_DECAY_SECONDS);
 
             return back()
@@ -56,7 +57,18 @@ class AuthController extends Controller
 
         $limiter->clear($throttleKey);
         $request->session()->regenerate();
-        $request->session()->put('admin_authenticated', true);
+        $request->session()->put([
+            'inventory_authenticated' => true,
+            'inventory_role' => $configuredAdmin ? 'admin' : 'employee',
+            'inventory_username' => $configuredAdmin ? (string) config('inventory.admin_username') : $user->username,
+            'inventory_user_id' => $configuredAdmin ? null : $user->id,
+        ]);
+
+        if ($configuredAdmin) {
+            $request->session()->put('admin_authenticated', true);
+        } else {
+            $request->session()->forget('admin_authenticated');
+        }
 
         return redirect()->intended(route('dashboard'));
     }
