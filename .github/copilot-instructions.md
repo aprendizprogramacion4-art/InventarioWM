@@ -15,6 +15,7 @@
 
 ## Inventory business rules
 - Every stock entry or exit must create an inventory movement.
+- Every new movement must persist `stock_before` and `stock_after` in the same transaction as the product stock update; historical rows may keep these nullable fields empty when their original balances are unknown.
 - Movement creation and product stock updates must remain atomic in a database transaction.
 - An exit must never make stock negative.
 - Do not silently change stock through ordinary product editing. Stock changes must be traceable through movements or a specifically designed adjustment workflow.
