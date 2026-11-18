@@ -51,6 +51,8 @@ class InventoryManagementTest extends TestCase
             'quantity' => 10,
             'notes' => 'Existencia inicial del producto',
             'created_by' => config('inventory.admin_username', 'admin'),
+            'stock_before' => 0,
+            'stock_after' => 10,
         ]);
 
         $this->assertDatabaseCount('inventory_movements', 1);
@@ -161,6 +163,36 @@ class InventoryManagementTest extends TestCase
             'type' => 'entry',
             'quantity' => 5,
             'notes' => 'Compra de proveedor',
+            'created_by' => 'admin',
+            'stock_before' => 10,
+            'stock_after' => 15,
+        ]);
+    }
+
+    public function test_inventory_exit_decreases_stock_and_records_before_and_after_balances(): void
+    {
+        $product = $this->createProduct(stock: 10);
+
+        $this->withSession(['admin_authenticated' => true])
+            ->post(route('movements.store'), [
+                'product_id' => $product->id,
+                'type' => 'exit',
+                'quantity' => 3,
+                'notes' => 'Salida de prueba',
+            ])
+            ->assertRedirect(route('dashboard'));
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'stock' => 7,
+        ]);
+
+        $this->assertDatabaseHas('inventory_movements', [
+            'product_id' => $product->id,
+            'type' => 'exit',
+            'quantity' => 3,
+            'stock_before' => 10,
+            'stock_after' => 7,
             'created_by' => 'admin',
         ]);
     }
