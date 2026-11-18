@@ -22,6 +22,8 @@ class MovementHistoryTest extends TestCase
             'quantity' => 10,
             'notes' => 'Compra al proveedor',
             'created_by' => 'admin',
+            'stock_before' => 5,
+            'stock_after' => 15,
         ]);
         InventoryMovement::create([
             'product_id' => $milk->id,
@@ -39,7 +41,10 @@ class MovementHistoryTest extends TestCase
             ->assertOk()
             ->assertSee('Arroz')
             ->assertSee('Compra al proveedor')
-            ->assertSee('admin');
+            ->assertSee('admin')
+            ->assertSee('Saldo anterior')
+            ->assertSee('Saldo posterior')
+            ->assertSee('15');
 
         // The product filter must still list every product. Check only the
         // results table to ensure unrelated movements are excluded.
@@ -47,6 +52,24 @@ class MovementHistoryTest extends TestCase
         $this->assertNotEmpty($tableBody[1] ?? null);
         $this->assertStringNotContainsString('Leche', $tableBody[1]);
         $this->assertStringNotContainsString('Venta', $tableBody[1]);
+    }
+
+    public function test_legacy_movements_without_balance_snapshots_remain_readable(): void
+    {
+        $product = $this->createProduct('Producto histórico');
+
+        InventoryMovement::create([
+            'product_id' => $product->id,
+            'type' => 'entry',
+            'quantity' => 5,
+            'notes' => 'Movimiento anterior a la trazabilidad',
+        ]);
+
+        $this->withSession(['admin_authenticated' => true])
+            ->get(route('movements.index'))
+            ->assertOk()
+            ->assertSee('Movimiento anterior a la trazabilidad')
+            ->assertSee('No disponible');
     }
 
     public function test_guest_cannot_open_movement_history(): void
