@@ -98,13 +98,13 @@ class UserManagementTest extends TestCase
         $this->withSession(['admin_authenticated' => true])
             ->post(route('users.store'), [
                 'name' => 'Nuevo empleado',
-                'username' => 'new.employee',
+                'username' => 'new_employee',
                 'password' => 'employee-secret',
                 'password_confirmation' => 'employee-secret',
             ])
             ->assertRedirect(route('users.index'));
 
-        $user = User::where('username', 'new.employee')->firstOrFail();
+        $user = User::where('username', 'new_employee')->firstOrFail();
 
         $this->assertSame('employee', $user->role);
         $this->assertTrue($user->is_active);
