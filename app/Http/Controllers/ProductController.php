@@ -53,7 +53,11 @@ class ProductController extends Controller
         $data['category'] = $data['category'] ?: 'General';
 
         DB::transaction(function () use ($data): void {
-            $product = Product::create($data);
+            $product = new Product($data);
+
+            if (!$product->save()) {
+                throw new RuntimeException('No se pudo registrar el producto.');
+            }
 
             if ($product->stock > 0) {
                 $movement = new InventoryMovement([

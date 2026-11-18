@@ -20,7 +20,7 @@ Aplicación web para administrar el inventario de una tienda pequeña. Está con
 - PHP **8.2 o superior**.
 - Extensiones PHP: `pdo_sqlite`, `sqlite3`, `openssl`, `mbstring`, `tokenizer`, `xml`, `dom`, `xmlwriter`, `ctype`, `fileinfo` y `json`.
 - SQLite (incluido como extensión de PHP; no necesitas instalar un servidor de base de datos).
-- Composer 2 solo es necesario para reinstalar o actualizar dependencias. Este paquete ya incluye `vendor/`.
+- Composer 2 es necesario para instalar las dependencias después de clonar el repositorio. La carpeta `vendor/` no se versiona.
 
 ## Instalación en Windows con XAMPP
 
@@ -34,7 +34,7 @@ Aplicación web para administrar el inventario de una tienda pequeña. Está con
 
    Si `php` no se reconoce, usa la ruta del PHP de XAMPP en los comandos, por ejemplo `C:\xampp\php\php.exe`. Si no aparecen `pdo_sqlite` y `sqlite3`, abre `C:\xampp\php\php.ini`, habilita las líneas `extension=pdo_sqlite` y `extension=sqlite3` (quitando `;` al inicio si lo tienen) y verifica que `mbstring`, `dom`, `xml` y `xmlwriter` también estén activas. Guarda el archivo y abre una nueva terminal.
 
-3. El paquete ya incluye las dependencias en `vendor/`, así que puedes continuar al siguiente paso. Si esa carpeta no existe o deseas reinstalar las dependencias, ejecuta:
+3. Instala las dependencias del proyecto. El repositorio no incluye la carpeta `vendor/` porque está excluida de Git:
 
    ```powershell
    composer install

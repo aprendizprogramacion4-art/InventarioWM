@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use RuntimeException;
 
 class InventoryMovementController extends Controller
 {
@@ -53,9 +54,17 @@ class InventoryMovementController extends Controller
                 return 'Stock insuficiente para '.$product->name.'.';
             }
 
-            InventoryMovement::create($data);
+            $movement = new InventoryMovement($data);
+
+            if (!$movement->save()) {
+                throw new RuntimeException('No se pudo registrar el movimiento de inventario.');
+            }
+
             $product->stock += $data['type'] === 'entry' ? $data['quantity'] : -$data['quantity'];
-            $product->save();
+
+            if (!$product->save()) {
+                throw new RuntimeException('No se pudo actualizar las existencias del producto.');
+            }
 
             return null;
         });
