@@ -54,13 +54,22 @@ class InventoryMovementController extends Controller
                 return 'Stock insuficiente para '.$product->name.'.';
             }
 
-            $movement = new InventoryMovement($data);
+            $stockBefore = (int) $product->stock;
+            $stockAfter = $data['type'] === 'entry'
+                ? $stockBefore + $data['quantity']
+                : $stockBefore - $data['quantity'];
+
+            $movement = new InventoryMovement([
+                ...$data,
+                'stock_before' => $stockBefore,
+                'stock_after' => $stockAfter,
+            ]);
 
             if (!$movement->save()) {
                 throw new RuntimeException('No se pudo registrar el movimiento de inventario.');
             }
 
-            $product->stock += $data['type'] === 'entry' ? $data['quantity'] : -$data['quantity'];
+            $product->stock = $stockAfter;
 
             if (!$product->save()) {
                 throw new RuntimeException('No se pudo actualizar las existencias del producto.');
