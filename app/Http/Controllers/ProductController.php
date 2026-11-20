@@ -23,9 +23,14 @@ class ProductController extends Controller
             ->with(['supplier:id,name', 'categoryRecord:id,name'])
             ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
                 $query->where('name', 'like', "%{$search}%")
+improve/project-quality-baseline
                     ->orWhere('sku', 'like', "%{$search}%")
                     ->orWhere('category', 'like', "%{$search}%")
                     ->orWhereHas('supplier', fn ($supplierQuery) => $supplierQuery->where('name', 'like', "%{$search}%"));
+
+                    ->orWhere('category', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%");
+main
             }))
             ->orderBy('name')
             ->paginate(12)
@@ -49,12 +54,18 @@ class ProductController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+ improve/project-quality-baseline
         $request->merge([
             'sku' => Str::upper(trim((string) $request->input('sku'))),
         ]);
 
         $data = $request->validate([
             'sku' => ['required', 'alpha_dash', 'max:64', 'unique:products,sku'],
+
+        $request->merge(['sku' => strtoupper(trim((string) $request->input('sku', '')))]);
+        $data = $request->validate([
+            'sku' => ['nullable', 'string', 'max:40', 'unique:products,sku'],
+ main
             'name' => ['required', 'string', 'max:150'],
             'category_id' => ['required', 'integer', 'exists:categories,id'],
             'supplier_id' => ['nullable', 'integer', 'exists:suppliers,id'],
@@ -65,7 +76,7 @@ class ProductController extends Controller
         ]);
         $data['category'] = Category::findOrFail($data['category_id'])->name;
 
-        DB::transaction(function () use ($data): void {
+        $sku = DB::transaction(function () use ($data): string {
             $product = new Product($data);
 
             if (!$product->save()) {
@@ -87,9 +98,11 @@ class ProductController extends Controller
                     throw new RuntimeException('No se pudo registrar la existencia inicial.');
                 }
             }
+
+            return (string) $product->sku;
         });
 
-        return redirect()->route('dashboard')->with('status', 'Producto registrado correctamente.');
+        return redirect()->route('dashboard')->with('status', "Producto registrado correctamente. Código: {$sku}.");
     }
 
     public function edit(Product $product): View

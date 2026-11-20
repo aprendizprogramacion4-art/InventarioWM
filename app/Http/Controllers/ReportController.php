@@ -24,6 +24,7 @@ class ReportController extends Controller
 
     public function csv(): Response
     {
+improve/project-quality-baseline
         $products = Product::with('supplier:id,name')
             ->orderBy('name')
             ->get(['sku', 'name', 'category', 'supplier_id', 'stock', 'minimum_stock', 'buy_price', 'sale_price']);
@@ -34,6 +35,16 @@ class ReportController extends Controller
         foreach ($products as $product) {
             fputcsv($stream, [
                 $this->safeSpreadsheetText($product->sku ?? ''),
+
+        $products = Product::orderBy('name')->get(['sku', 'name', 'category', 'stock', 'minimum_stock', 'buy_price', 'sale_price']);
+        $stream = fopen('php://temp', 'r+');
+
+        fputcsv($stream, ['SKU', 'Producto', 'Categoría', 'Existencias', 'Stock mínimo', 'Precio compra', 'Precio venta']);
+
+        foreach ($products as $product) {
+            fputcsv($stream, [
+                $this->safeSpreadsheetText($product->sku),
+ main
                 $this->safeSpreadsheetText($product->name),
                 $this->safeSpreadsheetText($product->category),
                 $this->safeSpreadsheetText($product->supplier?->name ?? ''),

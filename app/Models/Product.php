@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
+improve/project-quality-baseline
     protected $fillable = [
         'sku',
         'name',
@@ -19,6 +20,9 @@ class Product extends Model
         'buy_price',
         'sale_price',
     ];
+
+    protected $fillable = ['sku', 'name', 'category', 'stock', 'minimum_stock', 'buy_price', 'sale_price'];
+main
 
     protected function casts(): array
     {
@@ -38,6 +42,17 @@ class Product extends Model
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    protected static function booted(): void
+    {
+        static::created(function (Product $product): void {
+            if (blank($product->sku)) {
+                $product->forceFill([
+                    'sku' => 'INV-'.str_pad((string) $product->getKey(), 8, '0', STR_PAD_LEFT),
+                ])->saveQuietly();
+            }
+        });
     }
 
     public function movements(): HasMany
