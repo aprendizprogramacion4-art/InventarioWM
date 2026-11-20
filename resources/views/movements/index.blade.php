@@ -20,12 +20,12 @@
 <section class="panel panel-table">
     <div class="section-heading"><div><p class="eyebrow">Registro completo</p><h2>Movimientos registrados</h2><p class="muted result-count">{{ $movements->total() }} registros encontrados</p></div></div>
     <div class="table-scroll"><table>
-        <thead><tr><th scope="col">Fecha y hora</th><th scope="col">Producto</th><th scope="col">Tipo</th><th scope="col">Cantidad</th><th scope="col">Motivo / observación</th><th scope="col">Responsable</th></tr></thead>
+        <thead><tr><th scope="col">Fecha y hora</th><th scope="col">Producto</th><th scope="col">Tipo</th><th scope="col">Cantidad</th><th scope="col">Saldo anterior</th><th scope="col">Saldo posterior</th><th scope="col">Motivo / observación</th><th scope="col">Responsable</th></tr></thead>
         <tbody>
             @forelse ($movements as $movement)
-                <tr><td>{{ $movement->created_at->format('d/m/Y H:i') }}</td><td><strong>{{ $movement->product?->name ?? 'Producto no disponible' }}</strong></td><td><span class="movement-type {{ $movement->type === 'entry' ? 'entry' : 'exit' }}">{{ $movement->type === 'entry' ? 'Entrada' : 'Salida' }}</span></td><td><strong>{{ $movement->quantity }}</strong></td><td>{{ $movement->notes ?: '—' }}</td><td>{{ $movement->created_by ?: 'Histórico anterior' }}</td></tr>
+                <tr><td>{{ $movement->created_at->format('d/m/Y H:i') }}</td><td><strong>{{ $movement->product?->name ?? 'Producto no disponible' }}</strong></td><td><span class="movement-type {{ $movement->type === 'entry' ? 'entry' : 'exit' }}">{{ $movement->type === 'entry' ? 'Entrada' : 'Salida' }}</span></td><td><strong>{{ $movement->quantity }}</strong></td><td>{{ $movement->stock_before ?? 'No disponible' }}</td><td>{{ $movement->stock_after ?? 'No disponible' }}</td><td>{{ $movement->notes ?: '—' }}</td><td>{{ $movement->created_by ?: 'Histórico anterior' }}</td></tr>
             @empty
-                <tr><td colspan="6" class="empty"><span class="empty-mark">↔</span><strong>No hay movimientos que coincidan.</strong><span>Modifica los filtros para consultar otros registros.</span></td></tr>
+                <tr><td colspan="8" class="empty"><span class="empty-mark">↔</span><strong>No hay movimientos que coincidan.</strong><span>Modifica los filtros para consultar otros registros.</span></td></tr>
             @endforelse
         </tbody>
     </table></div>

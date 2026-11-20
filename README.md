@@ -1,30 +1,34 @@
 # Inventario WM
 
-Aplicación web para administrar el inventario de una tienda pequeña. Está construida con **Laravel 12, PHP 8.2 o superior y SQLite**. Funciona directamente en Windows, Linux o macOS con PHP y SQLite.
+Aplicación web para administrar el inventario de una tienda pequeña. Está construida con **Laravel 12, PHP 8.4 o superior y SQLite**. Funciona directamente en Windows, Linux o macOS con PHP y SQLite.
 
 ## Funcionalidades
 
-- Inicio de sesión para el administrador con contraseña almacenada mediante hash.
+- Inicio de sesión para el administrador configurado en `.env` y para empleados registrados en la base de datos; las contraseñas se almacenan mediante hash.
+- Dos roles: administrador y empleado, con permisos diferenciados.
+- Módulo para que el administrador cree y elimine cuentas de empleados.
 - Protección contra intentos repetidos de inicio de sesión.
-- Registro, edición y eliminación protegida de productos.
-- Búsqueda por nombre o categoría y paginación.
+- Registro, edición y eliminación protegida de productos con SKU único.
+- Catálogos administrables de categorías y proveedores; cada producto se vincula a una categoría y puede asociarse opcionalmente a un proveedor.
+- Búsqueda por nombre, SKU, categoría o proveedor, con paginación.
 - Registro de entradas y salidas con actualización transaccional del stock.
 - Validación para impedir salidas superiores a las existencias disponibles.
 - Alertas de stock bajo y resumen del valor del inventario.
-- Historial completo con filtros por producto, tipo y fecha; cada movimiento nuevo conserva el usuario administrador que lo registró.
+- Historial completo con filtros por producto, tipo y fecha; cada movimiento nuevo conserva el usuario responsable, el saldo anterior y el saldo posterior.
+- La existencia inicial también queda trazada como un movimiento de saldo cero al stock inicial. Los movimientos históricos anteriores a esta mejora muestran sus saldos como no disponibles, sin inventar valores retrospectivos.
 - Reportes por categoría y exportación a CSV con protección contra fórmulas de hoja de cálculo.
 - Interfaz adaptable a computadores, tabletas y celulares.
 
 ## Tecnologías y requisitos
 
-- PHP **8.2 o superior**.
+- PHP **8.4 o superior**.
 - Extensiones PHP: `pdo_sqlite`, `sqlite3`, `openssl`, `mbstring`, `tokenizer`, `xml`, `dom`, `xmlwriter`, `ctype`, `fileinfo` y `json`.
 - SQLite (incluido como extensión de PHP; no necesitas instalar un servidor de base de datos).
 - Composer 2 es necesario para instalar las dependencias después de clonar el repositorio. La carpeta `vendor/` no se versiona.
 
 ## Instalación en Windows con XAMPP
 
-1. Instala o abre XAMPP y verifica que su versión de PHP sea 8.2 o superior. Abre PowerShell dentro de la carpeta del proyecto.
+1. Instala o abre XAMPP y verifica que su versión de PHP sea 8.4 o superior. Abre PowerShell dentro de la carpeta del proyecto.
 2. Comprueba PHP y las extensiones necesarias:
 
    ```powershell
@@ -80,6 +84,7 @@ Aplicación web para administrar el inventario de una tienda pequeña. Está con
    ```
 
 9. Abre [http://127.0.0.1:8000](http://127.0.0.1:8000) en tu navegador e inicia sesión con las credenciales configuradas.
+10. Para crear empleados, ingresa como administrador, abre la opción **Usuarios**, registra el nombre, el usuario y una contraseña de al menos 8 caracteres. La cuenta tendrá permisos de empleado automáticamente.
 
 ### Si usas XAMPP y el comando `php` no funciona
 
@@ -152,6 +157,12 @@ InventarioWM/
 - La aplicación se entrega configurada para desarrollo local (`APP_ENV=local`, `APP_DEBUG=true`). Antes de publicarla en Internet debes configurar producción, desactivar el modo debug, habilitar HTTPS y revisar usuarios, permisos y copias de seguridad.
 - El prototipo Flask de `legacy/flask/` es histórico y no interviene en el funcionamiento de la aplicación Laravel.
 
+## Roles y permisos
+
+- **Administrador:** conserva el acceso configurado mediante `INVENTORY_ADMIN_USERNAME` e `INVENTORY_ADMIN_PASSWORD_HASH` en `.env`. Puede gestionar productos, movimientos, reportes y cuentas de empleados.
+- **Empleado:** se crea desde el módulo **Usuarios**. Puede consultar el inventario, registrar entradas y salidas, consultar el historial y ver reportes. No puede crear, editar ni eliminar productos, ni administrar cuentas.
+- Las cuentas de empleados se guardan en la tabla `users`. Si ya tienes una instalación, ejecuta `php artisan migrate` para crearla; las migraciones nuevas conservan productos y movimientos y agregan catálogos relacionados.
+
 ## Mejoras que quedan para una siguiente etapa
 
-El proyecto todavía no cubre todos los requisitos propuestos en el documento maestro. Para mantener claro el alcance, quedan pendientes el catálogo independiente de categorías y proveedores, los códigos únicos de producto, los usuarios con roles diferenciados y los ajustes de inventario con saldo anterior y nuevo. El acceso actual utiliza una sola cuenta administradora configurada en `.env`; no existe todavía un módulo para crear cuentas desde la interfaz.
+Quedan pendientes la edición de datos de categorías y proveedores, los códigos de barras opcionales y la ampliación de la gestión de cuentas con edición, desactivación y restablecimiento de contraseñas.

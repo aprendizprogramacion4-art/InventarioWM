@@ -8,8 +8,8 @@
     <title>@yield('title', 'Inventario WM')</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
-<body class="@if (session('admin_authenticated')) app-shell @else auth-shell @endif">
-    @if (session('admin_authenticated'))
+<body class="@if (session('inventory_authenticated') || session('admin_authenticated')) app-shell @else auth-shell @endif">
+    @if (session('inventory_authenticated') || session('admin_authenticated'))
         <header class="topbar">
             <a class="brand" href="{{ route('dashboard') }}" aria-label="Inventario WM, inicio">
                 <span class="brand-mark" aria-hidden="true"><span>W</span><i></i></span>
@@ -19,6 +19,12 @@
                 <a href="{{ route('dashboard') }}" @if (request()->routeIs('dashboard', 'products.*')) aria-current="page" @endif><span class="nav-number">01</span>Inventario</a>
                 <a href="{{ route('movements.index') }}" @if (request()->routeIs('movements.*')) aria-current="page" @endif><span class="nav-number">02</span>Movimientos</a>
                 <a href="{{ route('reports.index') }}" @if (request()->routeIs('reports.*')) aria-current="page" @endif><span class="nav-number">03</span>Reportes</a>
+                @if (session('inventory_role') === 'admin' || session('admin_authenticated'))
+                    <a href="{{ route('users.index') }}" @if (request()->routeIs('users.*')) aria-current="page" @endif><span class="nav-number">04</span>Usuarios</a>
+                    <a href="{{ route('categories.index') }}" @if (request()->routeIs('categories.*')) aria-current="page" @endif><span class="nav-number">05</span>Categorías</a>
+                    <a href="{{ route('suppliers.index') }}" @if (request()->routeIs('suppliers.*')) aria-current="page" @endif><span class="nav-number">06</span>Proveedores</a>
+                @endif
+                <span class="small muted">{{ session('inventory_username', 'Administrador') }}</span>
                 <form method="POST" action="{{ route('logout') }}">@csrf<button class="link-button" type="submit">Salir <span aria-hidden="true">↗</span></button></form>
             </nav>
         </header>
@@ -37,7 +43,7 @@
         @yield('content')
     </main>
 
-    @if (session('admin_authenticated'))
+    @if (session('inventory_authenticated') || session('admin_authenticated'))
         <footer class="app-footer"><span>INVENTARIO WM</span><span>Hecho para trabajar con más orden <b>✳</b></span></footer>
     @endif
 </body>

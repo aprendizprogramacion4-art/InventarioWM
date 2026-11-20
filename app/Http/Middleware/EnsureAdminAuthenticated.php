@@ -10,7 +10,7 @@ class EnsureAdminAuthenticated
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->session()->get('admin_authenticated')) {
+        if (!$request->session()->get('inventory_authenticated') && !$request->session()->get('admin_authenticated')) {
             return redirect()->route('login');
         }
 
