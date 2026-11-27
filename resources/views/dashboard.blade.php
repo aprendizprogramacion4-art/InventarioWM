@@ -55,6 +55,9 @@
             <label class="field-wide">Nombre del producto
                 <input name="name" value="{{ old('name') }}" required maxlength="150" placeholder="Ej. Café molido 500 g">
             </label>
+            <label class="field-wide">Código SKU <span class="muted">(opcional)</span>
+                <input name="sku" value="{{ old('sku') }}" maxlength="40" placeholder="Ej. CAF-500 o déjalo vacío para generarlo automáticamente">
+            </label>
             <label>Categoría
                 <input name="category" value="{{ old('category') }}" placeholder="General">
             </label>
@@ -125,7 +128,7 @@
     <div class="table-scroll">
         <table>
             <thead><tr>
-                <th scope="col">Producto</th><th scope="col">Categoría</th><th scope="col">Existencia</th><th scope="col">Estado</th><th scope="col">Mínimo</th><th scope="col">Compra</th><th scope="col">Venta</th><th scope="col">Acciones</th>
+                <th scope="col">Código</th><th scope="col">Producto</th><th scope="col">Categoría</th><th scope="col">Existencia</th><th scope="col">Estado</th><th scope="col">Mínimo</th><th scope="col">Compra</th><th scope="col">Venta</th><th scope="col">Acciones</th>
             </tr></thead>
             <tbody>
                 @forelse ($products as $product)
@@ -134,6 +137,7 @@
                         $statusClass = $product->stock <= $product->minimum_stock ? 'badge-warning' : 'badge-good';
                     @endphp
                     <tr>
+                        <td><code>{{ $product->sku }}</code></td>
                         <td><strong class="product-name">{{ $product->name }}</strong></td>
                         <td><span class="category-label">{{ $product->category }}</span></td>
                         <td><strong>{{ $product->stock }}</strong></td>
@@ -150,7 +154,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="8" class="empty"><span class="empty-mark">▦</span><strong>No hay productos para mostrar.</strong><span>Prueba con otra búsqueda o agrega un producto nuevo.</span></td></tr>
+                    <tr><td colspan="9" class="empty"><span class="empty-mark">▦</span><strong>No hay productos para mostrar.</strong><span>Prueba con otra búsqueda o agrega un producto nuevo.</span></td></tr>
                 @endforelse
             </tbody>
         </table>
