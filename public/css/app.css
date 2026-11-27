@@ -442,3 +442,182 @@ nav[role="navigation"] svg { width: 14px; height: 14px; }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
+
+
+/* =========================================================
+   INVENTARIO WM — INDUSTRIAL DARK
+   Capa visual del rediseño. Mantiene intacta la estructura
+   Blade y las clases existentes para reducir riesgos.
+   ========================================================= */
+:root {
+    color-scheme: dark;
+    --ink: #f0f1ed;
+    --ink-soft: #c0c5bf;
+    --muted: #929a94;
+    --line: #343a38;
+    --line-strong: #48504c;
+    --paper: #101312;
+    --surface: #191e1c;
+    --surface-soft: #202624;
+    --forest: #151a18;
+    --forest-deep: #0d100f;
+    --forest-light: #303a35;
+    --orange: #ff783e;
+    --orange-dark: #ff925f;
+    --orange-pale: #382219;
+    --sage: #29332e;
+    --success: #75c69a;
+    --warning: #ffad70;
+    --danger: #ff8278;
+    --radius: 13px;
+    --shadow: 0 16px 42px rgb(0 0 0 / 24%);
+}
+html { background: var(--paper); }
+body { background: var(--paper); color: var(--ink); }
+::selection { background: #ff783e; color: #17110e; }
+.topbar {
+    background: #0b0e0d;
+    border-bottom: 1px solid #303633;
+    box-shadow: 0 8px 28px rgb(0 0 0 / 18%);
+}
+.brand-mark, .login-symbol { background: var(--orange); color: #17110e; border-radius: 9px; }
+.brand-name { color: #f4f5f1; }
+.brand-caption { color: #929b94; }
+.main-nav a, .link-button { color: #b6beb8; border-radius: 6px; }
+.main-nav a:hover, .link-button:hover { background: #242b27; color: #fff; }
+.main-nav a[aria-current="page"] { background: #252d29; border-color: #414b45; color: #fff; }
+.main-nav a[aria-current="page"] .nav-number { color: var(--orange); }
+.link-button { color: #ff9a70; }
+.container { color: var(--ink); }
+.page-heading h1, .panel h2, .login-panel h2 { color: #f2f3ef; }
+.eyebrow { color: #ff986b; }
+.muted, .section-subtitle, .panel-description { color: var(--muted); }
+.dashboard-hero {
+    background: linear-gradient(112deg, #202724 0%, #171d1a 58%, #252a25 100%);
+    border: 1px solid #3a433d;
+    border-radius: 13px;
+    box-shadow: 0 20px 46px rgb(0 0 0 / 28%);
+}
+.dashboard-hero::before { border-color: rgb(255 255 255 / 9%); }
+.dashboard-hero::after { background: linear-gradient(110deg, transparent, rgb(0 0 0 / 34%)); }
+.hero-copy h1 { color: #f4f4ef; }
+.hero-copy h1 em { color: var(--orange); }
+.hero-copy > p:not(.eyebrow) { color: #b8c0b9; }
+.hero-link { color: #f3f4ef; border-color: #68716b; }
+.hero-link span { color: var(--orange); }
+.hero-index { color: #e4e8e2; }
+.hero-index span { color: #8f9991; }
+.art-orbit { border-color: rgb(230 237 228 / 15%); }
+.box-back { background: #58665d; }
+.box-front { background: var(--orange); }
+.art-sticker { background: #d9ded5; color: #171c19; }
+.art-caption { color: #b6beb7; }
+.stat, .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+.stat { color: var(--ink); }
+.stat-label, .stat-content > span, .stat-foot { color: var(--muted); }
+.stat-content strong { color: #f3f4ef; }
+.stat-symbol { background: #29312d; color: #ff9668; }
+.stat-products { border-top-color: #65796b; }
+.stat-units { border-top-color: #718b83; }
+.stat-warning { border-top-color: #d88b59; }
+.stat-value { border-top-color: var(--orange); }
+.stat-warning.has-alert { background: #241c18; border-color: #68412d; }
+.stat-warning.has-alert .stat-content strong { color: #ffb17e; }
+.stat-line { background: var(--orange); }
+.section-kicker { color: #9da79f; }
+.section-kicker i { background: #3b433e; }
+.panel-heading h2, .section-heading h2 { color: #f0f2ed; }
+.panel-heading-icon { background: #303a34; color: #f2f4ee; }
+.panel-heading-icon.icon-orange { background: #3a261d; color: #ff9a6a; }
+.panel-form { background: #1a201d; }
+label { color: #c9d0ca; }
+input, select, textarea {
+    color-scheme: dark;
+    color: #eef0eb;
+    background: #111614;
+    border-color: #3a443e;
+}
+input::placeholder, textarea::placeholder { color: #78827b; }
+input:hover, select:hover, textarea:hover { border-color: #59655d; }
+input:focus, select:focus, textarea:focus {
+    border-color: var(--orange);
+    outline: 3px solid rgb(255 120 62 / 15%);
+    box-shadow: none;
+}
+select option { background: #171d1a; color: #f0f1ed; }
+.button-dark { background: #e9ece6; color: #171c19; }
+.button-dark:hover { background: #fff; color: #101312; }
+.button-orange { background: var(--orange); color: #17110e; }
+.button-orange:hover { background: #ff9568; color: #17110e; }
+.button-outline, .quiet, .button-search {
+    color: #e1e6df;
+    background: #242b27;
+    border-color: #465149;
+}
+.button-outline:hover, .quiet:hover, .button-search:hover {
+    color: #fff;
+    background: #303a34;
+    border-color: #66746a;
+}
+table { color: #dfe4de; }
+th {
+    color: #aab4ac;
+    background: #202724;
+    border-bottom-color: #3b4540;
+}
+td { border-bottom-color: #303934; }
+tbody tr:hover { background: #222a26; }
+.product-name { color: #f0f2ed; }
+.category-label { color: #b6c0b8; background: #29322d; }
+.badge-good { color: #91d7ad; background: #1d3327; }
+.badge-warning { color: #ffb27f; background: #3b281e; }
+.movement-type.entry { color: #91d7ad; background: #1d3327; }
+.movement-type.exit { color: #ff9a8e; background: #3a2422; }
+.actions a { color: #ff9a6a; }
+.actions a:hover { color: #ffc09f; }
+.text-danger { color: #ff8c82; }
+.empty { color: #a0aaa2; }
+.empty strong { color: #e8ebe5; }
+.stock-note { background: #202923; border-color: #3b4b40; }
+.stock-note > span, .stock-note p { color: #9da99f; }
+.stock-note strong { color: #f0f3ed; }
+.filter-panel { background: #1a201d; }
+.notice { background: #1c3025; border-color: #365b43; color: #a8e0ba; }
+.notice-mark { background: #294c35; }
+.error-box { background: #382321; border-color: #70413a; color: #ffb0a5; }
+nav[role="navigation"] a, nav[role="navigation"] span[aria-current="page"] span, nav[role="navigation"] span[aria-disabled="true"] span {
+    color: #c7d0c8; background: #202724; border-color: #3d4841;
+}
+nav[role="navigation"] span[aria-current="page"] span {
+    color: #17110e; background: var(--orange); border-color: var(--orange);
+}
+.auth-shell { background: #101312; }
+.auth-shell .container { color: var(--ink); }
+.login-layout { background: #191e1c; border-color: #343d37; box-shadow: 0 24px 70px rgb(0 0 0 / 35%); }
+.login-story { background: linear-gradient(145deg, #242d28, #111614 78%); }
+.login-story-copy h1 { color: #f2f3ef; }
+.login-story-copy h1 em { color: var(--orange); }
+.login-story-copy > p:last-child { color: #b2bcb4; }
+.login-story-foot { color: #929e95; }
+.login-side { background: #191e1c; }
+.login-panel h2 { color: #f2f3ef; }
+.login-panel > .muted { color: #9ba69e; }
+.login-side-note { color: #87928a; }
+.app-footer { color: #737e76; }
+.app-footer b { color: var(--orange); }
+code { color: #ffad80; background: #30251f; }
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+@media (max-width: 760px) {
+    .topbar { background: #0b0e0d; }
+    .main-nav form { border-left-color: #3a443e; }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .panel, .stat { transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease; }
+    .panel:hover { border-color: #465149; }
+    .stat:hover { transform: translateY(-2px); border-color: #59655d; }
+}
