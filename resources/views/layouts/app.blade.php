@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#203b32">
+    <meta name="theme-color" content="#101312">
     <meta name="description" content="Inventario WM: una forma clara y sencilla de llevar el control de tu tienda.">
     <title>@yield('title', 'Inventario WM')</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
@@ -13,7 +13,7 @@
         <header class="topbar">
             <a class="brand" href="{{ route('dashboard') }}" aria-label="Inventario WM, inicio">
                 <span class="brand-mark" aria-hidden="true"><span>W</span><i></i></span>
-                <span class="brand-copy"><span class="brand-name">Inventario <strong>WM</strong></span><span class="brand-caption">ORDEN PARA TU NEGOCIO</span></span>
+                <span class="brand-copy"><span class="brand-name">Inventario <strong>WM</strong></span><span class="brand-caption">CONTROL DE INVENTARIO</span></span>
             </a>
             <nav class="main-nav" aria-label="Navegación principal">
                 <a href="{{ route('dashboard') }}" @if (request()->routeIs('dashboard', 'products.*')) aria-current="page" @endif><span class="nav-number">01</span>Inventario</a>
