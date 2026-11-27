@@ -620,3 +620,88 @@ code { color: #ffad80; background: #30251f; }
     .panel:hover { border-color: #465149; }
     .stat:hover { transform: translateY(-2px); border-color: #59655d; }
 }
+
+
+/* INVENTARIO WM — DARK TABLE SURFACES AND EMPTY STATES
+   Surface tokens shared by product and movement tables. */
+:root {
+    --table-head-bg: #202724;
+    --table-body-bg: #171d1a;
+    --table-row-bg: #1b211e;
+    --table-row-alt-bg: #1e2521;
+    --table-row-hover-bg: #28312b;
+    --table-border-color: #354139;
+    --table-text-color: #d8e0d9;
+    --empty-title-color: #f0f2ed;
+    --empty-description-color: #b9c3bb;
+    --empty-icon-bg: #33241e;
+    --empty-icon-color: #ff9868;
+}
+
+/* The scroll wrapper, table and every body cell must paint their own
+   dark surface: this avoids a white canvas showing through empty rows. */
+.panel-table .table-scroll {
+    background-color: var(--table-body-bg);
+    border-color: var(--table-border-color);
+    scrollbar-color: #59665d var(--table-body-bg);
+}
+.panel-table .table-scroll > table {
+    width: 100%;
+    background-color: var(--table-body-bg);
+}
+.panel-table .table-scroll > table thead th {
+    background-color: var(--table-head-bg);
+    color: var(--ink-soft);
+    border-bottom-color: var(--table-border-color);
+}
+.panel-table .table-scroll > table tbody {
+    background-color: var(--table-body-bg);
+}
+.panel-table .table-scroll > table tbody tr {
+    background-color: var(--table-row-bg);
+}
+.panel-table .table-scroll > table tbody tr:nth-child(even) {
+    background-color: var(--table-row-alt-bg);
+}
+.panel-table .table-scroll > table tbody td {
+    background-color: inherit;
+    color: var(--table-text-color);
+    border-bottom-color: var(--table-border-color);
+}
+.panel-table .table-scroll > table tbody td strong {
+    color: var(--ink);
+}
+.panel-table .table-scroll > table tbody tr:hover,
+.panel-table .table-scroll > table tbody tr:nth-child(even):hover {
+    background-color: var(--table-row-hover-bg);
+}
+.panel-table .table-scroll > table tbody td.empty {
+    min-height: 150px;
+    padding: 38px 20px;
+    background-color: var(--table-body-bg);
+    color: var(--empty-description-color);
+    text-align: center;
+    white-space: normal;
+}
+.panel-table .table-scroll > table tbody td.empty strong {
+    margin: 7px 0 5px;
+    color: var(--empty-title-color);
+    font-size: 14px;
+    font-weight: 700;
+}
+.panel-table .table-scroll > table tbody td.empty span:last-child {
+    color: var(--empty-description-color);
+    font-size: 12px;
+}
+.panel-table .table-scroll > table tbody td.empty .empty-mark {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    margin: 0 auto 10px;
+    place-items: center;
+    border: 1px solid var(--table-border-color);
+    border-radius: 12px;
+    background: var(--empty-icon-bg);
+    color: var(--empty-icon-color);
+    font-size: 24px;
+}

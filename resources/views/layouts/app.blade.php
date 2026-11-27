@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#101312">
     <meta name="description" content="Inventario WM: una forma clara y sencilla de llevar el control de tu tienda.">
     <title>@yield('title', 'Inventario WM')</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="/css/app.css?v=industrial-dark-2">
 </head>
 <body class="@if (session('admin_authenticated')) app-shell @else auth-shell @endif">
     @if (session('admin_authenticated'))
