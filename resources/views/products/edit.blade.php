@@ -6,7 +6,7 @@
     <a class="button button-outline" href="{{ route('dashboard') }}"><span aria-hidden="true">←</span> Volver al inventario</a>
 </section>
 <section class="panel form-panel edit-panel">
-    <div class="panel-heading"><div class="panel-heading-icon">✎</div><div><p class="eyebrow">Ficha del producto</p><h2>{{ $product->name }}</h2></div></div>
+    <div class="panel-heading"><div class="panel-heading-icon">✎</div><div><p class="eyebrow">Ficha del producto · <code>{{ $product->sku }}</code></p><h2>{{ $product->name }}</h2></div></div>
     <form method="POST" action="{{ route('products.update', $product) }}" class="form-grid edit-form">
         @csrf @method('PUT')
         <label class="field-wide">Nombre del producto<input name="name" value="{{ old('name', $product->name) }}" required maxlength="150"></label>
